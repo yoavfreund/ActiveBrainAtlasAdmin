@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.forms import TextInput, Textarea, Select, DateInput, DateTimeInput, NumberInput
+from django.db import models
 import csv
 from django.http import HttpResponse
 from brain.models import Animal, Histology, Injection, Virus, InjectionVirus, OrganicLabel, ScanRun, Slide, SlideCziToTif
@@ -21,8 +23,21 @@ class ExportCsvMixin:
 
     export_as_csv.short_description = "Export Selected"
 
+class AtlasAdminModel(admin.ModelAdmin):
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'size':'20'})},
+        models.DateTimeField: {'widget': DateInput(attrs={'size':'20'})},
+        models.DateField: {'widget': DateTimeInput(attrs={'size':'20'})},
+        models.IntegerField: {'widget': NumberInput(attrs={'size':'20'})},
+        models.TextField: {'widget': Textarea(attrs={'rows':4, 'cols':40})},
+    }
+    class Media:
+        css = {
+            'all': ('css/admin.css',)
+        }
+    
 
-class AnimalAdmin(admin.ModelAdmin, ExportCsvMixin):
+class AnimalAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'performance_center', 'comments', 'created')
     fields = []
     search_fields = ('prep_id',)
@@ -30,7 +45,7 @@ class AnimalAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ["export_as_csv"]
     exclude = ('created',)
     
-class HistologyAdmin(admin.ModelAdmin, ExportCsvMixin):
+class HistologyAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'label', 'performance_center')
     fields = []
     search_fields = ('prep_id',)
@@ -41,7 +56,7 @@ class HistologyAdmin(admin.ModelAdmin, ExportCsvMixin):
     def prep_id(self, instance):
         return instance.prep.prep_id
 
-class InjectionAdmin(admin.ModelAdmin, ExportCsvMixin):
+class InjectionAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'performance_center', 'anesthesia', 'comments', 'created')
     fields = []
     search_fields = ('prep_id',)
@@ -51,7 +66,7 @@ class InjectionAdmin(admin.ModelAdmin, ExportCsvMixin):
     def prep_id(self, instance):
         return instance.prep.prep_id
 
-class VirusAdmin(admin.ModelAdmin, ExportCsvMixin):
+class VirusAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('virus_name', 'virus_type', 'type_details', 'created')
     fields = []
     search_fields = ('virus_name',)
@@ -59,9 +74,9 @@ class VirusAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ["export_as_csv"]
 
 
-class InjectionVirusAdmin(admin.ModelAdmin):
+class InjectionVirusAdmin(AtlasAdminModel):
     list_display = ('prep_id', 'injection_comments', 'virus_name', 'created')
-    fields = ['injection', 'virus', 'created']
+    fields = ['injection', 'virus']
     search_fields = ('prep_id',)
     ordering = ['created']
     
@@ -75,14 +90,14 @@ class InjectionVirusAdmin(admin.ModelAdmin):
         return instance.virus.virus_name
 
 
-class OrganicLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
+class OrganicLabelAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('label_id', 'label_type', 'type_details', 'created')
     fields = []
     search_fields = ('label_id',)
     ordering = ['label_id', 'label_type', 'type_details', 'created']
     actions = ["export_as_csv"]
 
-class ScanRunAdmin(admin.ModelAdmin, ExportCsvMixin):
+class ScanRunAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'performance_center', 'machine','comments', 'created')
     fields = []
     search_fields = ('prep_id',)
@@ -92,7 +107,7 @@ class ScanRunAdmin(admin.ModelAdmin, ExportCsvMixin):
     def prep_id(self, instance):
         return instance.prep.prep_id
 
-class SlideAdmin(admin.ModelAdmin, ExportCsvMixin):
+class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'file_name', 'created')
     fields = []
     search_fields = ('prep_id',)
@@ -102,7 +117,7 @@ class SlideAdmin(admin.ModelAdmin, ExportCsvMixin):
     def prep_id(self, instance):
         return instance.scan_run.prep.prep_id
 
-class SlideCziToTifAdmin(admin.ModelAdmin, ExportCsvMixin):
+class SlideCziToTifAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ()
     fields = []
     search_fields = ()
