@@ -169,7 +169,7 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$180000$v12KVfSVbpJ0$KfSduov1aNu8SWk4O9SlYe8Pv/iAo33J/CT7putKV64=','2020-02-29 17:01:21.000913',1,'edward','','','eodonnell@ucsd.edu',1,1,'2020-02-29 17:01:05.300150');
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$180000$v12KVfSVbpJ0$KfSduov1aNu8SWk4O9SlYe8Pv/iAo33J/CT7putKV64=','2020-03-01 14:51:42.074733',1,'edward','','','eodonnell@ucsd.edu',1,1,'2020-02-29 17:01:05.300150');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -250,7 +250,7 @@ CREATE TABLE `django_admin_log` (
   KEY `django_admin_log_user_id_c564eba6_fk_auth_user_id` (`user_id`),
   CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   CONSTRAINT `django_admin_log_user_id_c564eba6_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -259,7 +259,7 @@ CREATE TABLE `django_admin_log` (
 
 LOCK TABLES `django_admin_log` WRITE;
 /*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
-INSERT INTO `django_admin_log` VALUES (1,'2020-02-29 18:28:20.202490','DK39','Animal object (DK39)',2,'[{\"changed\": {\"fields\": [\"Strain\"]}}]',18,1),(2,'2020-02-29 18:48:59.544174','7','Injection object (7)',2,'[{\"changed\": {\"fields\": [\"Created\"]}}]',19,1),(3,'2020-02-29 19:22:38.744221','7','InjectionVirus object (7)',1,'[{\"added\": {}}]',21,1);
+INSERT INTO `django_admin_log` VALUES (1,'2020-02-29 18:28:20.202490','DK39','Animal object (DK39)',2,'[{\"changed\": {\"fields\": [\"Strain\"]}}]',18,1),(2,'2020-02-29 18:48:59.544174','7','Injection object (7)',2,'[{\"changed\": {\"fields\": [\"Created\"]}}]',19,1),(3,'2020-02-29 19:22:38.744221','7','InjectionVirus object (7)',1,'[{\"added\": {}}]',21,1),(4,'2020-02-29 21:27:23.213303','joe','Animal object (joe)',1,'[{\"added\": {}}]',18,1),(5,'2020-02-29 21:29:25.010512','me','Animal object (me)',1,'[{\"added\": {}}]',18,1),(6,'2020-03-01 17:12:15.183050','joe','Animal object (joe)',3,'',18,1),(7,'2020-03-01 17:12:15.207851','me','Animal object (me)',3,'',18,1);
 /*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -276,7 +276,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -285,7 +285,7 @@ CREATE TABLE `django_content_type` (
 
 LOCK TABLES `django_content_type` WRITE;
 /*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
-INSERT INTO `django_content_type` VALUES (7,'activebrainatlas','animal'),(8,'activebrainatlas','fileoperation'),(9,'activebrainatlas','histology'),(10,'activebrainatlas','injection'),(11,'activebrainatlas','injectionvirus'),(12,'activebrainatlas','organiclabel'),(13,'activebrainatlas','rowsequence'),(14,'activebrainatlas','scanrun'),(15,'activebrainatlas','slide'),(16,'activebrainatlas','slideczitotif'),(17,'activebrainatlas','virus'),(1,'admin','logentry'),(3,'auth','group'),(2,'auth','permission'),(4,'auth','user'),(18,'brain','animal'),(19,'brain','injection'),(21,'brain','injectionvirus'),(20,'brain','slide'),(5,'contenttypes','contenttype'),(6,'sessions','session');
+INSERT INTO `django_content_type` VALUES (7,'activebrainatlas','animal'),(8,'activebrainatlas','fileoperation'),(9,'activebrainatlas','histology'),(10,'activebrainatlas','injection'),(11,'activebrainatlas','injectionvirus'),(12,'activebrainatlas','organiclabel'),(13,'activebrainatlas','rowsequence'),(14,'activebrainatlas','scanrun'),(15,'activebrainatlas','slide'),(16,'activebrainatlas','slideczitotif'),(17,'activebrainatlas','virus'),(1,'admin','logentry'),(3,'auth','group'),(2,'auth','permission'),(4,'auth','user'),(18,'brain','animal'),(23,'brain','histology'),(19,'brain','injection'),(21,'brain','injectionvirus'),(24,'brain','organiclabel'),(22,'brain','scanrun'),(20,'brain','slide'),(26,'brain','slideczitotif'),(25,'brain','virus'),(5,'contenttypes','contenttype'),(6,'sessions','session');
 /*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -337,7 +337,7 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` VALUES ('vjk5fomlabxdbowxa23l2bkamcq8gl9v','NTc0MWJjNDE5ZjQ3MjIyZDhjODY1ZGQzYmI2ZjU2MjgxNzM2MzY2ODp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI3ZGE2NjNjMWJhOGNhOTdhMjFhYzE3YWJlNGFmYTk2NzdiNDQ5ZDZmIn0=','2020-03-14 17:01:21.026336');
+INSERT INTO `django_session` VALUES ('hv1366vcxnklbqm23vk9zy0144ygqq1j','NTc0MWJjNDE5ZjQ3MjIyZDhjODY1ZGQzYmI2ZjU2MjgxNzM2MzY2ODp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI3ZGE2NjNjMWJhOGNhOTdhMjFhYzE3YWJlNGFmYTk2NzdiNDQ5ZDZmIn0=','2020-03-15 14:51:42.096958');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -724,6 +724,32 @@ LOCK TABLES `virus` WRITE;
 INSERT INTO `virus` VALUES (1,'AAV2/8-CAG-Flex-oG','AAV',NULL,'Helper',0,NULL,NULL,NULL,0,0,0,0,0,0,0,NULL,NULL,'Plasmid sourced from Addgene (#74292) and prepared in Duke. This is mixed with the virus in line 2 for a 1:1 mixture that is used','2020-02-19 05:44:59',1),(2,'AAV2/8-CAG-Flex-TVA-mcherry','AAV',NULL,'Helper',0,NULL,'RFP',NULL,0,0,0,0,0,0,0,NULL,NULL,'Plasmid sourced from Addgene (#48332) and prepared in Duke. This is mixed with the virus in line 3 for a 1:1 mixture that is used','2020-02-19 05:44:59',1),(3,'AAV2retro-CAG-cre','AAV',NULL,'AAV retro',3,NULL,NULL,NULL,0,0,0,0,0,0,0,NULL,NULL,'Sourced from Harvard Virus core','2020-02-19 05:44:59',1),(4,'CANE-dG-GFP','DG rabies',NULL,'RV',0,NULL,'GFP',NULL,0,0,0,0,0,0,0,NULL,NULL,NULL,'2020-02-19 05:44:59',1),(5,'TEST','Adenovirus',NULL,'TEST',0,NULL,'YFP',NULL,1,2,3,4,5,6,7,'Adgene',NULL,NULL,'2020-02-27 23:15:06',1);
 /*!40000 ALTER TABLE `virus` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+
+--
+-- Table structure for table `schedule`
+--
+
+DROP TABLE IF EXISTS `schedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `schedule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `prep_id` varchar(20) NOT NULL,
+  `day` date not null,
+  `notes` text not null,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `active` tinyint(4) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `K__schedule_prep_id` (`prep_id`),
+  CONSTRAINT `FK__schedule_prep_id` FOREIGN KEY (`prep_id`) REFERENCES `animal` (`prep_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -734,4 +760,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-29 11:34:24
+-- Dump completed on 2020-03-01  9:12:42
