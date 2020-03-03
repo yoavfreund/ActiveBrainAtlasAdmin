@@ -1,0 +1,52 @@
+{% include 'header.html' with title='Listing of Animals' %}
+<div class="container">
+
+	<div class="row row-offcanvas row-offcanvas-right">
+		<div class="col-xs-12">
+
+			<h4>Listing of {{ animal_title }} </h4>
+
+
+			<form id="id_list" action="image-listing" method="get">
+				{% csrf_token %}
+				<table class="table table-bordered table-condensed">
+					{{ form.as_table }}
+				</table>
+			</form>
+
+			<h4></h4>
+
+			<table class="table table-bordered table-condensed">
+
+				<thead>
+					<tr>
+
+						<th>Prep ID</th>
+						<th>Performance Center</th>
+						<th>Alias</th>
+						<th>Created</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in datarows %}
+					<tr class="{% cycle 'odd' 'even' %}">
+
+						<td> {{ row.prep_id }} </td>
+						<td> {{ row.performance_center }} </td>
+						<td> {{ row.aliases_1 }} </td>
+						<td> {{ row.created }} </td>
+
+					</tr>
+
+					{% endfor %}
+				</tbody>
+			</table>
+
+		</div>
+		<!-- end of ten columns -->
+
+	</div>
+	<!-- end of container -->
+
+
+	{% include 'footer.html' %}

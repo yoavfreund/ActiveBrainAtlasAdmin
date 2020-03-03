@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from brain import views as brain_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path(r'image-listing', brain_views.image_list),
 ]
