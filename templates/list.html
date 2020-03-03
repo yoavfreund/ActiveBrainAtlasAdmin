@@ -14,7 +14,7 @@
 				</table>
 			</form>
 
-			<h4></h4>
+			<h4>{{animal.prep_id}}</h4>
 
 			<table class="table table-bordered table-condensed">
 
@@ -28,10 +28,10 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for row in datarows %}
+					{% for row in tiffs %}
 					<tr class="{% cycle 'odd' 'even' %}">
 
-						<td> {{ row.prep_id }} </td>
+						<td> {{ row.slide }} </td>
 						<td> {{ row.performance_center }} </td>
 						<td> {{ row.aliases_1 }} </td>
 						<td> {{ row.created }} </td>
