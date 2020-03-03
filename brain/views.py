@@ -12,8 +12,10 @@ def image_list(request):
     animals = Animal.objects.filter(prep_id=prep_id).order_by('prep_id')
     animal = Animal.objects.get(prep_id=prep_id)
     scans = ScanRun.objects.filter(prep_id=prep_id).order_by('created')
-    slides = Slide.objects.filter(scan_run_id__in=[1,2]).order_by('file_name')
-    tiffs = SlideCziToTif.objects.filter(slide_id__in=[1,2]).order_by('file_name')
+    scan_ids = [scan.id for scan in scans]
+    slides = Slide.objects.filter(scan_run_id__in=scan_ids).order_by('file_name')
+    slide_ids = [slide.id for slide in slides]
+    tiffs = SlideCziToTif.objects.filter(slide_id__in=slide_ids).order_by('file_name')
 
     return render(request, 'list.html',{'animals': animals,
                                         'animal': animal, 

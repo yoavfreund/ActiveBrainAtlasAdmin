@@ -31,7 +31,7 @@
 					{% for row in tiffs %}
 					<tr class="{% cycle 'odd' 'even' %}">
 
-						<td> {{ row.slide }} </td>
+						<td> {{ row.slide.scan_run.prep.prep_id }} </td>
 						<td> {{ row.performance_center }} </td>
 						<td> {{ row.aliases_1 }} </td>
 						<td> {{ row.created }} </td>
