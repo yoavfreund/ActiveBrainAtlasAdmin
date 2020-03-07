@@ -108,7 +108,7 @@ class ScanRunAdmin(AtlasAdminModel, ExportCsvMixin):
         return instance.prep.prep_id
 
 class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ('prep_id', 'file_name', 'created')
+    list_display = ('prep_id', 'file_name', 'scene_qc_1', 'scene_qc_2', 'scene_qc_3', 'scene_qc_4')
     fields = []
     search_fields = ('prep_id',)
     ordering = ['file_name', 'created']
@@ -118,7 +118,7 @@ class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
         return instance.scan_run.prep.prep_id
 
 class SlideCziToTifAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ()
+    list_display = ('file_name', 'scene_number', 'channel','width','height','file_size')
     fields = []
     search_fields = ()
     ordering = []
