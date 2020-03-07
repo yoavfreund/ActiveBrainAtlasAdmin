@@ -38,7 +38,7 @@ class Animal(AtlasModel):
     comments = models.CharField(max_length=2001, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'animal'
         verbose_name = 'Animal'
         verbose_name_plural = 'Animals'
@@ -222,6 +222,9 @@ class SlideCziToTif(AtlasModel):
         db_table = 'slide_czi_to_tif'
         verbose_name = 'Slide CZI to TIF'
         verbose_name_plural = 'Slides CZI to TIF'
+        
+    def thumbnail_name(self):
+        return self.file_name.replace('tif','png')
 
 
 class Virus(AtlasModel):

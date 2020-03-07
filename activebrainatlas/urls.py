@@ -15,9 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import TemplateView
 from brain import views as brain_views
+from chart.views import TaskView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'image-listing', brain_views.image_list),
+    path(r'gantt', TemplateView.as_view(template_name='gantt.html')),
+    path(r'task/<int:schedule_id>/', TaskView.as_view())
 ]
+"""
+from .views import TaskView
+
+urlpatterns = [
+    url(r'^$', TemplateView.as_view(template_name='gantt.html')),
+    url(r'^task/(?P<schedule_id>\d+)/$', TaskView.as_view())
+]
+"""
