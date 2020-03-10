@@ -37,9 +37,7 @@ class Schedule(BaseGanttModel):
     selected_row = models.IntegerField(default=0)
 
     def __str__(self):
-        return u'%s' % (
-            self.name,
-        )
+        return u'{} {}'.format(self.prep.prep_id, self.name)
 
 
 # class MileStone(BaseGanttModel):
@@ -52,6 +50,14 @@ class Schedule(BaseGanttModel):
 class Roles(models.Model):
     name = models.CharField('Name', max_length=30, blank=True)
     #role = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
+    def __str__(self):
+        return u'{}'.format(self.name)
+
+    class Meta:
+        managed = True
+        db_table = 'chart_roles'
+        verbose_name = 'Role'
+        verbose_name_plural = 'Roles'
 
 
 class Resource(models.Model):
@@ -60,6 +66,8 @@ class Resource(models.Model):
     last_name = models.CharField(('last name'), max_length=30, blank=True)
     role = models.ForeignKey('Roles', null=True, blank=True, on_delete=models.CASCADE)
     effort = models.IntegerField(default=0)
+    def __str__(self):
+        return u'{} {}'.format(self.first_name, self.last_name)
 
 
 class Task(BaseGanttModel):
@@ -81,7 +89,7 @@ class Task(BaseGanttModel):
 #    )
 
     def __str__(self):
-        return 'Task: %s' % self.name
+        return u'{}'.format(self.name)
 
 
 

@@ -26,9 +26,10 @@ SECRET_KEY = 'sdfsdoifjpo2i34kjhlkjh876765fytf675765uyli8glugururfyyy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
+#DEBUG = False
+#ALLOWED_HOSTS = ['activebrainatlas.ucsd.edu']
 
 # Application definition
 

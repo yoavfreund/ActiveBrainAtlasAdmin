@@ -7,6 +7,8 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from django_mysql.models import EnumField
+from django.db import connection
+
 
 class AtlasModel(models.Model):
     active = models.IntegerField(default = 1, editable = False)
@@ -19,8 +21,8 @@ class Animal(AtlasModel):
     prep_id = models.CharField(primary_key=True, max_length=20)
     performance_center = EnumField(choices=['CSHL','Salk','UCSD','HHMI','Duke'], blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
-    species = models.CharField(max_length=5, blank=True, null=True)
-    strain = EnumField(choices=['mouse','rat'], blank=True, null=True)
+    species = EnumField(choices=['mouse','rat'], blank=True, null=True)
+    strain = models.CharField(max_length=5, blank=True, null=True)
     sex = EnumField(choices=['M','F'], blank=True, null=True)
     genotype = models.CharField(max_length=100, blank=True, null=True)
     breeder_line = models.CharField(max_length=100, blank=True, null=True)
@@ -42,6 +44,10 @@ class Animal(AtlasModel):
         db_table = 'animal'
         verbose_name = 'Animal'
         verbose_name_plural = 'Animals'
+
+    def __str__(self):
+        return u'{}'.format(self.prep_id)
+
  
 
 class FileOperation(AtlasModel):
@@ -62,7 +68,7 @@ class Histology(AtlasModel):
     prep = models.ForeignKey(Animal, models.DO_NOTHING)
     virus = models.ForeignKey('Virus', models.DO_NOTHING, blank=True, null=True)
     label = models.ForeignKey('OrganicLabel', models.DO_NOTHING, blank=True, null=True)
-    performance_center = EnumField(choices=['FedEx','UPS'], blank=True, null=True)
+    performance_center = EnumField(choices=['CSHL','Salk','UCSD','HHMI'], blank=True, null=True)
     anesthesia = EnumField(choices=['ketamine','isoflurane','pentobarbital','fatal plus'], blank=True, null=True)
     perfusion_age_in_days = models.PositiveIntegerField()
     perfusion_date = models.DateField(blank=True, null=True)
@@ -73,6 +79,7 @@ class Histology(AtlasModel):
     whole_brain = models.CharField(max_length=1, blank=True, null=True)
     block = models.CharField(max_length=200, blank=True, null=True)
     date_sectioned = models.DateField(blank=True, null=True)
+    side_sectioned_first = EnumField(choices=['left','right'], blank=False, null=False)
     sectioning_method = EnumField(choices=['cryoJane','cryostat','vibratome','optical','sliding microtiome'], blank=True, null=True)
     section_thickness = models.PositiveIntegerField()
     orientation = EnumField(choices=['coronal','horizontal','sagittal','oblique'], blank=True, null=True)
@@ -86,6 +93,10 @@ class Histology(AtlasModel):
         db_table = 'histology'
         verbose_name = 'Histology'
         verbose_name_plural = 'Histologies'
+
+    def __str__(self):
+        return u'{} {}'.format(self.prep.prep_id, self.virus.virus_name)
+
 
 
 class Injection(AtlasModel):
@@ -149,6 +160,11 @@ class OrganicLabel(AtlasModel):
     class Meta:
         managed = False
         db_table = 'organic_label'
+        verbose_name = 'Organic Label'
+        verbose_name_plural = 'Organic Labels'
+
+    def __str__(self):
+        return "{} {}".format(self.label_id, self.label_type)
 
 
 class RowSequence(models.Model):
@@ -171,8 +187,8 @@ class ScanRun(AtlasModel):
     scenes_per_slide = EnumField(choices=['1','2','3','4','5','6'], blank=True, null=True)
     section_schema = EnumField(choices=['L to R','R to L'], blank=True, null=True)
     channels_per_scene = EnumField(choices=['1','2','3','4'], blank=True, null=True)
-    slide_folder_path = models.CharField(max_length=200, blank=True, null=True)
-    converted_folder_path = models.CharField(max_length=200, blank=True, null=True)
+#    slide_folder_path = models.CharField(max_length=200, blank=True, null=True)
+#    converted_folder_path = models.CharField(max_length=200, blank=True, null=True)
     converted_status = EnumField(choices=['not started','converted','converting','error'], blank=True, null=True)
     ch_1_filter_set = EnumField(choices=['68','47','38','46','63','64','50'], blank=True, null=True)
     ch_2_filter_set = EnumField(choices=['68','47','38','46','63','64','50'], blank=True, null=True)
@@ -190,12 +206,12 @@ class Slide(AtlasModel):
     slide_physical_id = models.IntegerField()
     rescan_number = models.CharField(max_length=1)
     slide_status = EnumField(choices=['Bad','Good'], blank=False, null=False)
-    scene_qc_1 = EnumField(choices=['','Missing one section','two','three','four','five','six','O-o-F','Bad tissue'])
-    scene_qc_2 = EnumField(choices=['','Missing one section','two','three','four','five','six','O-o-F','Bad tissue'])
-    scene_qc_3 = EnumField(choices=['','Missing one section','two','three','four','five','six','O-o-F','Bad tissue'])
-    scene_qc_4 = EnumField(choices=['','Missing one section','two','three','four','five','six','O-o-F','Bad tissue'])
-    scene_qc_5 = EnumField(choices=['','Missing one section','two','three','four','five','six','O-o-F','Bad tissue'])
-    scene_qc_6 = EnumField(choices=['','Missing one section','two','three','four','five','six','O-o-F','Bad tissue'])
+    scene_qc_1 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
+    scene_qc_2 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
+    scene_qc_3 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
+    scene_qc_4 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
+    scene_qc_5 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
+    scene_qc_6 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
     file_name = models.CharField(max_length=200)
     comments = models.CharField(max_length=2001, blank=True, null=True)
     file_size = models.FloatField()
@@ -210,6 +226,7 @@ class Slide(AtlasModel):
 class SlideCziToTif(AtlasModel):
     slide = models.ForeignKey(Slide, models.DO_NOTHING)
     file_name = models.CharField(max_length=200)
+    section_number = models.IntegerField()
     scene_number = models.IntegerField()
     channel = models.IntegerField()
     width = models.IntegerField()
@@ -225,6 +242,45 @@ class SlideCziToTif(AtlasModel):
         
     def thumbnail_name(self):
         return self.file_name.replace('tif','png')
+    
+    def include_tif(self):
+        status = True
+        if self.scene_number == 1 and self.slide.scene_qc_1 != None:
+            status = False
+        if self.scene_number == 2 and self.slide.scene_qc_2 != None:
+            status = False
+        if self.scene_number == 3 and self.slide.scene_qc_3 != None:
+            status = False
+        if self.scene_number == 4 and self.slide.scene_qc_4 != None:
+            status = False
+        if self.scene_number == 5 and self.slide.scene_qc_5 != None:
+            status = False
+        if self.scene_number == 6 and self.slide.scene_qc_6 != None:
+            status = False
+        if self.slide.slide_status == 'Bad':
+            status = False 
+        return status
+    
+    include_tif.boolean = True
+
+
+class Section(AtlasModel):
+
+    class Meta:
+        managed = False
+        db_table = 'section'
+        verbose_name = 'Section'
+        verbose_name_plural = 'Sections'
+
+    def create(self, scan_run_id):
+        cursor = connection.cursor()
+        query = "begin django_sp.procedure_test(:foo); end; "
+        param = {"scan_run_id": scan_run_id}
+        sp = cursor.execute(query, param)
+        data = cursor.fetchall()
+        cursor.close()
+        return data
+
 
 
 class Virus(AtlasModel):

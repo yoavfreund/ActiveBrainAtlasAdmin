@@ -27,7 +27,7 @@ class AtlasAdminModel(admin.ModelAdmin):
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'20'})},
         models.DateTimeField: {'widget': DateInput(attrs={'size':'20'})},
-        models.DateField: {'widget': DateTimeInput(attrs={'size':'20'})},
+        models.DateField: {'widget': DateTimeInput(attrs={'size':'20','type':'date'})},
         models.IntegerField: {'widget': NumberInput(attrs={'size':'20'})},
         models.TextField: {'widget': Textarea(attrs={'rows':4, 'cols':40})},
     }
@@ -52,7 +52,8 @@ class HistologyAdmin(AtlasAdminModel, ExportCsvMixin):
     ordering = ['prep_id', 'label']
     actions = ["export_as_csv"]
     exclude = ('created',)
-    
+
+
     def prep_id(self, instance):
         return instance.prep.prep_id
 
@@ -108,9 +109,9 @@ class ScanRunAdmin(AtlasAdminModel, ExportCsvMixin):
         return instance.prep.prep_id
 
 class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ('prep_id', 'file_name', 'scene_qc_1', 'scene_qc_2', 'scene_qc_3', 'scene_qc_4')
+    list_display = ('prep_id', 'file_name', 'slide_status', 'scene_qc_1', 'scene_qc_2', 'scene_qc_3', 'scene_qc_4')
     fields = []
-    search_fields = ('prep_id',)
+    search_fields = ['scan_run__prep__prep_id']
     ordering = ['file_name', 'created']
     actions = ["export_as_csv"]
     
@@ -118,13 +119,13 @@ class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
         return instance.scan_run.prep.prep_id
 
 class SlideCziToTifAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ('file_name', 'scene_number', 'channel','width','height','file_size')
+    list_display = ('file_name', 'include_tif','section_number', 'scene_number', 'channel','width','height','file_size')
     fields = []
-    search_fields = ()
-    ordering = []
+    search_fields = ('file_name',)
+    ordering = ['section_number']
     actions = ["export_as_csv"]
     
-
+    
 
 admin.site.register(Animal, AnimalAdmin)
 admin.site.register(Histology, HistologyAdmin)
