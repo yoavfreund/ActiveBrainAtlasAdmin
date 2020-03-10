@@ -5,39 +5,39 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title>Gantt Chart</title>
 
-  <link rel=stylesheet href="static/chart/jquery_chart/platform.css" type="text/css">
-  <link rel=stylesheet href="static/chart/jquery_chart/libs/dateField/jquery.dateField.css" type="text/css">
+  <link rel=stylesheet href="/static/chart/jquery_chart/platform.css" type="text/css">
+  <link rel=stylesheet href="/static/chart/jquery_chart/libs/dateField/jquery.dateField.css" type="text/css">
 
-  <link rel=stylesheet href="static/chart/jquery_chart/gantt.css" type="text/css">
-  <link rel=stylesheet href="static/chart/jquery_chart/ganttPrint.css" type="text/css" media="print">
+  <link rel=stylesheet href="/static/chart/jquery_chart/gantt.css" type="text/css">
+  <link rel=stylesheet href="/static/chart/jquery_chart/ganttPrint.css" type="text/css" media="print">
 
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
-  <script src="static/chart/jquery_chart/libs/jquery.livequery.min.js"></script>
-  <script src="static/chart/jquery_chart/libs/jquery.timers.js"></script>
-  <script src="static/chart/jquery_chart/libs/platform.js"></script>
-  <script src="static/chart/jquery_chart/libs/date.js"></script>
-  <script src="static/chart/jquery_chart/libs/i18nJs.js"></script>
-  <script src="static/chart/jquery_chart/libs/dateField/jquery.dateField.js"></script>
-  <script src="static/chart/jquery_chart/libs/JST/jquery.JST.js"></script>
+  <script src="/static/chart/jquery_chart/libs/jquery.livequery.min.js"></script>
+  <script src="/static/chart/jquery_chart/libs/jquery.timers.js"></script>
+  <script src="/static/chart/jquery_chart/libs/platform.js"></script>
+  <script src="/static/chart/jquery_chart/libs/date.js"></script>
+  <script src="/static/chart/jquery_chart/libs/i18nJs.js"></script>
+  <script src="/static/chart/jquery_chart/libs/dateField/jquery.dateField.js"></script>
+  <script src="/static/chart/jquery_chart/libs/JST/jquery.JST.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="static/chart/jquery_chart/libs/jquery.svg.css">
-  <script type="text/javascript" src="static/chart/jquery_chart/libs/jquery.svg.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/static/chart/jquery_chart/libs/jquery.svg.css">
+  <script type="text/javascript" src="/static/chart/jquery_chart/libs/jquery.svg.min.js"></script>
 
   <!--In case of jquery 1.7-->
   <!--<script type="text/javascript" src="libs/jquery.svgdom.pack.js"></script>-->
 
   <!--In case of jquery 1.8-->
-  <script type="text/javascript" src="static/chart/jquery_chart/libs/jquery.svgdom.1.8.js"></script>
+  <script type="text/javascript" src="/static/chart/jquery_chart/libs/jquery.svgdom.1.8.js"></script>
 
 
-  <script src="static/chart/jquery_chart/ganttUtilities.js"></script>
-  <script src="static/chart/jquery_chart/ganttTask.js"></script>
-  <script src="static/chart/jquery_chart/ganttDrawerSVG.js"></script>
+  <script src="/static/chart/jquery_chart/ganttUtilities.js"></script>
+  <script src="/static/chart/jquery_chart/ganttTask.js"></script>
+  <script src="/static/chart/jquery_chart/ganttDrawerSVG.js"></script>
   <!--<script src="ganttDrawer.js"></script>-->
-  <script src="static/chart/jquery_chart/ganttGridEditor.js"></script>
-  <script src="static/chart/jquery_chart/ganttMaster.js"></script>
+  <script src="/static/chart/jquery_chart/ganttGridEditor.js"></script>
+  <script src="/static/chart/jquery_chart/ganttMaster.js"></script>
 </head>
 <body style="background-color: #fff;">
 
@@ -173,7 +173,7 @@ function loadGanttFromServer(taskId, callback) {
   var prof = new Profiler("loadServerSide");
   prof.reset();
 
-  $.getJSON("/task/1", {task_id:taskId}, function(response) {
+  $.getJSON("/activebrainatlas/task/1", {task_id:taskId}, function(response) {
 {#    console.log(response.status);#}
     if (response.ok) {
       prof.stop();
@@ -217,7 +217,7 @@ function saveGanttOnServer() {
     }
   }
 
-  $.ajax("/task/"+schedule_id+'/', {
+  $.ajax("/activebrainatlas/task/"+schedule_id+'/', {
     dataType:false,
     headers: {"X-CSRFToken": csrftoken},
     data: {CM:"SVPROJECT",prj:JSON.stringify(prj)},
@@ -594,7 +594,7 @@ function editResources(){
   <div class="resourceEditor" style="padding: 5px;">
 
     <h2>Project team</h2>
-    <table  cellspacing="1" cellpadding="0" width="100%" id="resourcesTable">
+    <table  cellspacing="1" cellpadding="0" width="100%" id="/staticTable">
       <tr>
         <th style="width:100px;">name</th>
         <th style="width:30px;" id="addResource"><span class="teamworkIcon" style="cursor: pointer">+</span></th>

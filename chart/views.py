@@ -11,11 +11,19 @@ from .utils import save_task, delete_tasks
 class TaskView(View):
 
     def get(self, *args, **kwargs):
+        """
         try:
             schedule = Schedule.objects.get(pk=kwargs.get('schedule_id'))
             serializer = ScheduleSerializer(schedule)
         except:
             raise Http404
+        return JsonResponse(data={'project': serializer.data,
+                                  "schedule_id": kwargs.get('schedule_id'),
+                                  'ok': 'ok'},
+                            safe=False)
+        """
+        schedule = Schedule.objects.get(pk=kwargs.get('schedule_id'))
+        serializer = ScheduleSerializer(schedule)
         return JsonResponse(data={'project': serializer.data,
                                   "schedule_id": kwargs.get('schedule_id'),
                                   'ok': 'ok'},
