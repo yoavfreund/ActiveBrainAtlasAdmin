@@ -265,6 +265,13 @@ class SlideCziToTif(AtlasModel):
 
 
 class Section(AtlasModel):
+    prep = models.ForeignKey(Animal, models.DO_NOTHING)
+    section_number = models.IntegerField()
+    section_qc = EnumField(choices=['OK','Missing','Replace'], blank=False, null=False)
+    ch_1_path = models.CharField(max_length=200)
+    ch_2_path = models.CharField(max_length=200)
+    ch_3_path = models.CharField(max_length=200)
+    ch_4_path = models.CharField(max_length=200)
 
     class Meta:
         managed = False
@@ -274,8 +281,8 @@ class Section(AtlasModel):
 
     def create(self, scan_run_id):
         cursor = connection.cursor()
-        query = "begin django_sp.procedure_test(:foo); end; "
-        param = {"scan_run_id": scan_run_id}
+        query = "create_sections()"
+        param = {"prep_id": prep_id, "orderby": orderby}
         sp = cursor.execute(query, param)
         data = cursor.fetchall()
         cursor.close()
