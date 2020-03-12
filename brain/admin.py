@@ -3,7 +3,11 @@ from django.forms import TextInput, Textarea, Select, DateInput, DateTimeInput, 
 from django.db import models
 import csv
 from django.http import HttpResponse
-from brain.models import Animal, Histology, Injection, Virus, InjectionVirus, OrganicLabel, ScanRun, Slide, SlideCziToTif
+from django.utils.html import format_html
+from django.urls import reverse
+from django.urls import path
+from django.template.response import TemplateResponse
+from brain.models import Animal, Histology, Injection, Virus, InjectionVirus, OrganicLabel, ScanRun, Slide, SlideCziToTif, Section
 
 class ExportCsvMixin:
     def export_as_csv(self, request, queryset):
@@ -41,10 +45,19 @@ class AtlasAdminModel(admin.ModelAdmin):
     
 
 class AnimalAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ('prep_id', 'performance_center', 'comments', 'created')
+    list_display = ('prep_id', 'performance_center', 'comments', 'created', 'create_section')
     search_fields = ('prep_id',)
     ordering = ['prep_id']
     exclude = ('created',)
+
+    def create_section(self, obj):
+            return format_html(
+                '<a class="button" href="{}">Create Sections</a>&nbsp;',
+                reverse('admin:account-deposit', args=[obj.pk]),
+            )
+            
+    create_section.short_description = 'Sections'
+    create_section.allow_tags = True    
     
 class HistologyAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'label', 'performance_center')
@@ -106,10 +119,62 @@ class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
     def prep_id(self, instance):
         return instance.scan_run.prep.prep_id
 
+
+class IsIncludedFilter(admin.SimpleListFilter):
+    title = 'Include?'
+    parameter_name = 'include_tif'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('Good', 'Good'),
+            ('Bad', 'Bad'),
+        )
+        
+        
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == 'Good':
+            return queryset.filter(include_tif = 1)
+        elif value == 'Bad':
+            return queryset.exclude(include_tif = 2)
+        return queryset
+
 class SlideCziToTifAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('file_name', 'include_tif','section_number', 'scene_number', 'channel','width','height','file_size')
     search_fields = ('file_name',)
     ordering = ['section_number']
+    list_filter = (IsIncludedFilter, )
+
+
+"""
+admin/brain/section/?created__
+admin/brain/section/DK52
+"""
+
+class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
+    list_display = ('prep_id', 'section_qc', 'ch_1_path', 'ch_2_path', 'ch_3_path', 'ch_4_path')
+    list_filter = ('prep_id', )
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            # path('<prep_id>', self.admin_site.admin_view(self.process_section),  name='account-deposit',
+            path('<prep_id>', self.process_section,  name='account-deposit',
+            )
+        ]
+        return custom_urls + urls
+
+    def process_section(self, request, prep_id, *args, **kwargs):
+       sections =  self.model._meta.model.objects.filter(prep_id__exact=prep_id)
+
+       context = self.admin_site.each_context(request)
+       context['opts'] = self.model._meta
+       context['results'] = sections
+       context['title'] = 'Sections for {}'.format(prep_id)
+       return TemplateResponse(
+            request,
+            'admin/section/list.html',
+            context,
+        )
 
     
 
@@ -122,6 +187,7 @@ admin.site.register(OrganicLabel, OrganicLabelAdmin)
 admin.site.register(ScanRun, ScanRunAdmin)
 admin.site.register(Slide, SlideAdmin)
 admin.site.register(SlideCziToTif, SlideCziToTifAdmin)
+admin.site.register(Section, SectionAdmin)
 
 admin.site.site_header = 'Active Brain Atlas Admin'
 admin.site.site_title = "Active Brain Atlas"
