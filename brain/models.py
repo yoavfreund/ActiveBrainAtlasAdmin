@@ -7,7 +7,6 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from django_mysql.models import EnumField
-from django.db import connection
 
 
 class AtlasModel(models.Model):
@@ -278,16 +277,6 @@ class Section(AtlasModel):
         db_table = 'section'
         verbose_name = 'Section'
         verbose_name_plural = 'Sections'
-
-    def create(self, scan_run_id):
-        cursor = connection.cursor()
-        query = "create_sections()"
-        param = {"prep_id": prep_id, "orderby": orderby}
-        sp = cursor.execute(query, param)
-        data = cursor.fetchall()
-        cursor.close()
-        return data
-
 
 
 class Virus(AtlasModel):
