@@ -7,6 +7,8 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.urls import path
 from django.template.response import TemplateResponse
+from django.db import connection
+
 from brain.models import Animal, Histology, Injection, Virus, InjectionVirus, OrganicLabel, ScanRun, Slide, SlideCziToTif, Section
 
 class ExportCsvMixin:
@@ -146,11 +148,6 @@ class SlideCziToTifAdmin(AtlasAdminModel, ExportCsvMixin):
     list_filter = (IsIncludedFilter, )
 
 
-"""
-admin/brain/section/?created__
-admin/brain/section/DK52
-"""
-
 class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'section_qc', 'ch_1_path', 'ch_2_path', 'ch_3_path', 'ch_4_path')
     list_filter = ('prep_id', )
@@ -164,7 +161,14 @@ class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
         return custom_urls + urls
 
     def process_section(self, request, prep_id, *args, **kwargs):
-       sections =  self.model._meta.model.objects.filter(prep_id__exact=prep_id)
+        cursor = connection.cursor()
+        query = "create_sections()"
+        param = {"prep_id": prep_id, "orderby": orderby}
+        sp = cursor.execute(query, param)
+        data = cursor.fetchall()
+        cursor.close()
+
+        sections =  self.model._meta.model.objects.filter(prep_id__exact=prep_id)
 
        context = self.admin_site.each_context(request)
        context['opts'] = self.model._meta
