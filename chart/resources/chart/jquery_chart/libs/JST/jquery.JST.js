@@ -4,8 +4,8 @@ $.fn.loadTemplates = function() {
 };
 
 $.JST = {
-  _templates: new Object(),
-  _decorators:new Object(),
+  _templates: {},
+  _decorators:{},
 
   loadTemplates: function(elems) {
     elems.each(function() {
@@ -62,7 +62,7 @@ $.JST = {
 
   createFromTemplate: function(jsonData, template, transformToPrintable) {
     var templates = $.JST._templates;
-    var jsData=new Object();
+    var jsData={};
     if (transformToPrintable){
       for (var prop in jsonData){
         var value = jsonData[prop];

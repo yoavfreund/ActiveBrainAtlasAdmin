@@ -258,7 +258,7 @@
     return function (elem) {
       return $.svg.isSVGElem(elem) || origIsXml(elem);
     }
-  }($.find.isXML)
+  }($.find.isXML);
 
   var div = document.createElement('div');
   div.appendChild(document.createComment(''));

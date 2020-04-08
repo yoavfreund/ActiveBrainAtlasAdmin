@@ -42,7 +42,7 @@ GridEditor.prototype.fillEmptyLines = function () {
       var emptyRow = $(this);
       //add on the first empty row only
       if (!master.canWrite || emptyRow.prevAll(".emptyRow").size() > 0)
-        return
+        return;
 
       master.beginTransaction();
       var lastTask;
@@ -140,7 +140,7 @@ GridEditor.prototype.refreshExpandStatus = function(task){
     par.rowElement.find(".exp-controller").addClass('expcoll exp');
   }
 
-}
+};
 
 GridEditor.prototype.refreshTaskRow = function (task) {
   //console.debug("refreshTaskRow")
@@ -217,7 +217,7 @@ GridEditor.prototype.bindRowExpandEvents = function (task, taskRow) {
      self.master.gantt.refreshGantt();
 
    });
-}
+};
 
 GridEditor.prototype.bindRowInputEvents = function (task, taskRow) {
   var self = this;
@@ -468,7 +468,7 @@ GridEditor.prototype.openFullEditor = function (task, taskRow) {
   taskEditor.find("file_upload").val(task.file);
   taskEditor.find("#filename").attr('href',task.file);
   taskEditor.find("#filename").text(task.file);
-    console.log(task.file)
+    console.log(task.file);
   if (task.startIsMilestone)
     taskEditor.find("#startIsMilestone").attr("checked", true);
   if (task.endIsMilestone)
@@ -494,7 +494,7 @@ GridEditor.prototype.openFullEditor = function (task, taskRow) {
   // loop on already assigned resources
   for (var i = 0; i < task.assigs.length; i++) {
     var assig = task.assigs[i];
-      console.log(assig,"Assignees")
+      console.log(assig,"Assignees");
     var assigRow = $.JST.createFromTemplate({'task':task, 'assig':assig}, "ASSIGNMENT_ROW");
     assigsTable.append(assigRow);
   }
@@ -617,7 +617,7 @@ GridEditor.prototype.openFullEditor = function (task, taskRow) {
                task.file = contents;
                task.file_name = f.name;
                task.file_type = f.type;
-           }
+           };
            r.readAsText(f);
        } catch (e) {
            console.error("error: ",e.message);
@@ -641,9 +641,9 @@ GridEditor.prototype.openFullEditor = function (task, taskRow) {
       taskEditor.find("tr[assigId]").each(function () {
         var trAss = $(this);
         var assId = trAss.attr("assigId");
-          console.log(assId,"Assignment id")
+          console.log(assId,"Assignment id");
         var resId = trAss.find("[name=resourceId]").val();
-          console.log(resId,"Resource id")
+          console.log(resId,"Resource id");
         var roleId = trAss.find("[name=roleId]").val();
         var effort = millisFromString(trAss.find("[name=effort]").val());
 

@@ -968,7 +968,7 @@ GanttMaster.prototype.getCollapsedDescendant = function(){
        if(task.collapsed) collapsedDescendant = collapsedDescendant.concat(task.getDescendant());
     }
     return collapsedDescendant;
-}
+};
 
 
 /**
