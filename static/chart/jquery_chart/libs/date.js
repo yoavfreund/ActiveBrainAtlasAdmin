@@ -22,13 +22,13 @@ Date.$VERSION = 1.02;
 // Utility function to append a 0 to single-digit numbers
 Date.LZ = function(x) {return(x<0||x>9?"":"0")+x};
 // Full month names. Change this for local month names
-Date.monthNames = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
+Date.monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 // Month abbreviations. Change this for local month names
-Date.monthAbbreviations = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+Date.monthAbbreviations = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 // Full day names. Change this for local month names
-Date.dayNames = new Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+Date.dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 // Day abbreviations. Change this for local month names
-Date.dayAbbreviations = new Array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
+Date.dayAbbreviations = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 // Used for parsing ambiguous dates like 1/2/2000 - default to preferring 'American' format meaning Jan 2.
 // Set to false to prefer 'European' format meaning Feb 1
 Date.preferAmericanFormat = true;
@@ -51,10 +51,10 @@ if (!Date.prototype.getFullYear) {
 Date.parseString = function(val, format) {
 	// If no format is specified, try a few common formats
 	if (typeof(format)=="undefined" || format==null || format=="") {
-		var generalFormats=new Array(Date.defaultFormat,'y-M-d','MMM d, y','MMM d,y','y-MMM-d','d-MMM-y','MMM d','MMM-d','d-MMM');
-		var monthFirst=new Array('M/d/y','M-d-y','M.d.y','M/d','M-d');
-		var dateFirst =new Array('d/M/y','d-M-y','d.M.y','d/M','d-M');
-		var checkList=new Array(generalFormats,Date.preferAmericanFormat?monthFirst:dateFirst,Date.preferAmericanFormat?dateFirst:monthFirst);
+		var generalFormats=[Date.defaultFormat,'y-M-d','MMM d, y','MMM d,y','y-MMM-d','d-MMM-y','MMM d','MMM-d','d-MMM'];
+		var monthFirst=['M/d/y','M-d-y','M.d.y','M/d','M-d'];
+		var dateFirst =['d/M/y','d-M-y','d.M.y','d/M','d-M'];
+		var checkList=[generalFormats,Date.preferAmericanFormat?monthFirst:dateFirst,Date.preferAmericanFormat?dateFirst:monthFirst];
 		for (var i=0; i<checkList.length; i++) {
 			var l=checkList[i];
 			for (var j=0; j<l.length; j++) {
@@ -65,7 +65,7 @@ Date.parseString = function(val, format) {
 			}
 		}
 		return null;
-	};
+	}
 
 	this.isInteger = function(val) {
 		for (var i=0; i < val.length; i++) {
@@ -402,7 +402,7 @@ Date.prototype.format = function(format) {
 	var m=this.getMinutes();
 	var s=this.getSeconds();
 	// Convert real date parts into formatted versions
-	var value=new Object();
+	var value={};
 	if (y.length < 4) {
 		y=""+(+y+1900);
 	}
@@ -581,4 +581,4 @@ Date.prototype.setFirstDayOfThisWeek= function (firstDayOfWeek){
   if (!firstDayOfWeek)
     firstDayOfWeek=Date.firstDayOfWeek;
   this.setDate(this.getDate() - this.getDay() +firstDayOfWeek - (this.getDay()==0 && firstDayOfWeek!=0 ?7:0));
-}
+};

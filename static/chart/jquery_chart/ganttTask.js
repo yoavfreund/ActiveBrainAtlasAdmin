@@ -52,7 +52,7 @@ function Task(id, name, code, level, start, end, duration, collapsed, file) {
   this.depends="";
   this.canWrite=true; // by default all tasks are writeable
 
-  this.start = start
+  this.start = start;
   this.duration = duration;
   this.end = end;
   this.startIsMilestone = false;

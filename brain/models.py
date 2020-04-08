@@ -7,12 +7,13 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from django_mysql.models import EnumField
-
+from django.utils.safestring import mark_safe
+import os
 
 class AtlasModel(models.Model):
     active = models.IntegerField(default = 1, editable = False)
     created = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         abstract = True
 
@@ -21,7 +22,7 @@ class Animal(AtlasModel):
     performance_center = EnumField(choices=['CSHL','Salk','UCSD','HHMI','Duke'], blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     species = EnumField(choices=['mouse','rat'], blank=True, null=True)
-    strain = models.CharField(max_length=5, blank=True, null=True)
+    strain = models.CharField(max_length=15, blank=True, null=True)
     sex = EnumField(choices=['M','F'], blank=True, null=True)
     genotype = models.CharField(max_length=100, blank=True, null=True)
     breeder_line = models.CharField(max_length=100, blank=True, null=True)
@@ -31,12 +32,13 @@ class Animal(AtlasModel):
     ship_date = models.DateField(blank=True, null=True)
     shipper = EnumField(choices=['FedEx','UPS'], blank=True, null=True)
     tracking_number = models.CharField(max_length=100, blank=True, null=True)
+    section_direction = EnumField(choices=[('ASC', 'L to R'), ('DESC','R to L')], blank=False, null=False, default = 'ASC')
     aliases_1 = models.CharField(max_length=100, blank=True, null=True)
     aliases_2 = models.CharField(max_length=100, blank=True, null=True)
     aliases_3 = models.CharField(max_length=100, blank=True, null=True)
     aliases_4 = models.CharField(max_length=100, blank=True, null=True)
     aliases_5 = models.CharField(max_length=100, blank=True, null=True)
-    comments = models.CharField(max_length=2001, blank=True, null=True)
+    comments = models.TextField(max_length=2001, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -84,8 +86,8 @@ class Histology(AtlasModel):
     orientation = EnumField(choices=['coronal','horizontal','sagittal','oblique'], blank=True, null=True)
     oblique_notes = models.CharField(max_length=200, blank=True, null=True)
     mounting = EnumField(choices=['every section','2nd','3rd','4th','5ft','6th'], blank=True, null=True)
-    counterstain = EnumField(choices=['thionon','NtB','NtFR','DAPI','Giemsa','Syto41'], blank=True, null=True)
-    comments = models.CharField(max_length=2001, blank=True, null=True)
+    counterstain = EnumField(choices=['thionin','NtB','NtFR','DAPI','Giemsa','Syto41'], blank=True, null=True)
+    comments = models.TextField(max_length=2001, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -94,7 +96,12 @@ class Histology(AtlasModel):
         verbose_name_plural = 'Histologies'
 
     def __str__(self):
-        return u'{} {}'.format(self.prep.prep_id, self.virus.virus_name)
+        if self.virus is not None and self.virus.virus_name is not None:
+            histology_label = u'{} {}'.format(self.prep.prep_id, self.virus.virus_name)
+        else:
+            histology_label = u'{}'.format(self.prep.prep_id)
+
+        return histology_label
 
 
 
@@ -114,7 +121,7 @@ class Injection(AtlasModel):
     injection_date = models.DateField(blank=True, null=True)
     transport_days = models.IntegerField()
     virus_count = models.IntegerField()
-    comments = models.CharField(max_length=2001, blank=True, null=True)
+    comments = models.TextField(max_length=2001, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -154,7 +161,7 @@ class OrganicLabel(AtlasModel):
     emission_range = models.IntegerField()
     label_source = EnumField(choices=['Invitrogen','Sigma','Thermo-Fisher'], blank=True, null=True)
     source_details = models.CharField(max_length=100, blank=True, null=True)
-    comments = models.CharField(max_length=2000, blank=True, null=True)
+    comments = models.TextField(max_length=2000, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -184,16 +191,16 @@ class ScanRun(AtlasModel):
     scan_date = models.DateField(blank=True, null=True)
     file_type = EnumField(choices=['CZI','JPEG2000','NDPI','NGR'], blank=True, null=True)
     scenes_per_slide = EnumField(choices=['1','2','3','4','5','6'], blank=True, null=True)
-    section_schema = EnumField(choices=['L to R','R to L'], blank=True, null=True)
     channels_per_scene = EnumField(choices=['1','2','3','4'], blank=True, null=True)
-#    slide_folder_path = models.CharField(max_length=200, blank=True, null=True)
-#    converted_folder_path = models.CharField(max_length=200, blank=True, null=True)
     converted_status = EnumField(choices=['not started','converted','converting','error'], blank=True, null=True)
     ch_1_filter_set = EnumField(choices=['68','47','38','46','63','64','50'], blank=True, null=True)
     ch_2_filter_set = EnumField(choices=['68','47','38','46','63','64','50'], blank=True, null=True)
     ch_3_filter_set = EnumField(choices=['68','47','38','46','63','64','50'], blank=True, null=True)
     ch_4_filter_set = EnumField(choices=['68','47','38','46','63','64','50'], blank=True, null=True)
-    comments = models.CharField(max_length=2001, blank=True, null=True)
+    comments = models.TextField(max_length=2001, blank=True, null=True)
+
+    def __str__(self):
+        return "{} Scan ID: {}".format(self.prep.prep_id, self.id)
 
     class Meta:
         managed = False
@@ -212,10 +219,12 @@ class Slide(AtlasModel):
     scene_qc_5 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
     scene_qc_6 = EnumField(choices=['Missing one section','two','three','four','five','six','O-o-F','Bad tissue'], blank=True, null=True)
     file_name = models.CharField(max_length=200)
-    comments = models.CharField(max_length=2001, blank=True, null=True)
-    file_size = models.FloatField()
-    processing_duration = models.FloatField()
-    processed = models.IntegerField()
+    comments = models.TextField(max_length=2001, blank=True, null=True)
+    file_size = models.FloatField(verbose_name='File size (bytes)')
+    processed = models.BooleanField(verbose_name="Converted")
+
+    def __str__(self):
+        return "{}".format(self.file_name)
 
     class Meta:
         managed = False
@@ -230,8 +239,9 @@ class SlideCziToTif(AtlasModel):
     channel = models.IntegerField()
     width = models.IntegerField()
     height = models.IntegerField()
-    comments = models.CharField(max_length=2000, blank=True, null=True)
-    file_size = models.FloatField()
+    comments = models.TextField(max_length=2000, blank=True, null=True)
+    file_size = models.FloatField(verbose_name='File size (bytes)')
+    processing_duration = models.FloatField(verbose_name="Processing time (seconds)")
 
     class Meta:
         managed = False
@@ -241,7 +251,41 @@ class SlideCziToTif(AtlasModel):
         
     def thumbnail_name(self):
         return self.file_name.replace('tif','png')
-    
+
+    def file_size_mb(self):
+        if self.file_size > 0:
+            return self.file_size // 1E6
+        else:
+            return self.file_size
+
+
+
+    def image_tag(self):
+        png = self.file_name.replace('tif','png')
+        prep_id = self.slide.scan_run.prep.prep_id
+        testfile = "/net/birdstore/Active_Atlas_Data/data_root/pipeline_data/{}/thumbnail/{}".format(prep_id, png)
+        if os.path.isfile(testfile):
+            thumbnail = "/data/{}/thumbnail/{}".format(prep_id, png)
+            return mark_safe(
+            '<div class="profile-pic-wrapper"><img src="{}" /></div>'.format(thumbnail) )
+        else:
+            return mark_safe('<div>Not available</div>')
+    image_tag.short_description = 'Image'
+
+    def histogram(self):
+        png = self.file_name.replace('tif','png')
+        prep_id = self.slide.scan_run.prep.prep_id
+        testfile = "/net/birdstore/Active_Atlas_Data/data_root/pipeline_data/{}/histogram/{}".format(prep_id, png)
+        if os.path.isfile(testfile):
+            histogram = "/data/{}/histogram/{}".format(prep_id, png)
+            return mark_safe(
+            '<div class="profile-pic-wrapper"><img src="{}" /></div>'.format(histogram) )
+        else:
+            return mark_safe('<div>Not available</div>')
+    histogram.short_description = 'Histogram'
+
+
+    # this is deprecated
     def include_tif(self):
         status = True
         if self.scene_number == 1 and self.slide.scene_qc_1 != None:
@@ -259,12 +303,25 @@ class SlideCziToTif(AtlasModel):
         if self.slide.slide_status == 'Bad':
             status = False 
         return status
-    
-    include_tif.boolean = True
 
+
+class RawSection(AtlasModel):
+    prep = models.ForeignKey(Animal, models.DO_NOTHING)
+    section_number = models.IntegerField()
+    channel = models.IntegerField()
+    source_file = models.CharField(max_length=200)
+    destination_file = models.CharField(max_length=200)
+    file_status = EnumField(choices=['unusable', 'blurry', 'good'], blank=False, null=False, default='good')
+
+    class Meta:
+        managed = False
+        db_table = 'raw_section'
+        verbose_name = 'Raw Section'
+        verbose_name_plural = 'Raw Sections'
 
 class Section(AtlasModel):
     prep = models.ForeignKey(Animal, models.DO_NOTHING)
+    file_name = models.CharField(max_length=200)
     section_number = models.IntegerField()
     section_qc = EnumField(choices=['OK','Missing','Replace'], blank=False, null=False)
     ch_1_path = models.CharField(max_length=200)
@@ -297,7 +354,7 @@ class Virus(AtlasModel):
     emission_range = models.IntegerField()
     virus_source = EnumField(choices=['Adgene','Salk','Penn','UNC'], blank=True, null=True)
     source_details = models.CharField(max_length=100, blank=True, null=True)
-    comments = models.CharField(max_length=2000, blank=True, null=True)
+    comments = models.TextField(max_length=2000, blank=True, null=True)
 
     class Meta:
         managed = False

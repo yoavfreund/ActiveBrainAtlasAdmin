@@ -290,7 +290,7 @@ if (!Array.prototype.filter){
     if (typeof fun != "function")
       throw new TypeError();
 
-    var res = new Array();
+    var res = [];
     var thisp = arguments[1];
     for (var i = 0; i < len; i++) {
       if (i in this) {

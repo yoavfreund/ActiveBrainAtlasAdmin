@@ -329,7 +329,7 @@ function formatNumber(numberString, format) {
   //while (numberString.indexOf(group) > -1)
   //	numberString = numberString.replace(group, '');
   //var number = new Number(numberString.replace(dec, ".").replace(neg, "-"));
-  var number = new Number(numberString);
+  var number = Number(numberString);
 
 
   var forcedToZero = false;
@@ -349,15 +349,15 @@ function formatNumber(numberString, format) {
 
     // round or truncate number as needed
     if (round)
-      number = new Number(number.toFixed(decimalFormat.length));
+      number = Number(number.toFixed(decimalFormat.length));
     else {
       var numStr = number.toString();
       numStr = numStr.substring(0, numStr.lastIndexOf('.') + decimalFormat.length + 1);
-      number = new Number(numStr);
+      number = Number(numStr);
     }
 
     var decimalValue = number % 1;
-    var decimalString = new String(decimalValue.toFixed(decimalFormat.length));
+    var decimalString = String(decimalValue.toFixed(decimalFormat.length));
     decimalString = decimalString.substring(decimalString.lastIndexOf(".") + 1);
 
     for (var i = 0; i < decimalFormat.length; i++) {
@@ -391,7 +391,7 @@ function formatNumber(numberString, format) {
   var onePortion = "";
   if (!(ones == 0 && onesFormat.substr(onesFormat.length - 1) == '#') || forcedToZero) {
     // find how many digits are in the group
-    var oneText = new String(Math.abs(ones));
+    var oneText = String(Math.abs(ones));
     var groupLength = 9999;
     if (onesFormat.lastIndexOf(",") != -1)
       groupLength = onesFormat.length - onesFormat.lastIndexOf(",") - 1;

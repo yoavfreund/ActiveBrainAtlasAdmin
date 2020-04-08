@@ -2,14 +2,18 @@ from django.contrib import admin
 from django.forms import TextInput, Textarea, Select, DateInput, DateTimeInput, NumberInput
 from django.db import models
 import csv
+import pandas as pd
 from django.http import HttpResponse
 from django.utils.html import format_html
 from django.urls import reverse
 from django.urls import path
 from django.template.response import TemplateResponse
 from django.db import connection
+from django.contrib.admin.widgets import AdminDateWidget
 
-from brain.models import Animal, Histology, Injection, Virus, InjectionVirus, OrganicLabel, ScanRun, Slide, SlideCziToTif, Section
+from brain.models import (Animal, Histology, Injection, Virus, InjectionVirus,
+                          OrganicLabel, ScanRun, Slide, SlideCziToTif,
+                          RawSection, Section)
 
 class ExportCsvMixin:
     def export_as_csv(self, request, queryset):
@@ -33,10 +37,17 @@ class AtlasAdminModel(admin.ModelAdmin):
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'20'})},
         models.DateTimeField: {'widget': DateInput(attrs={'size':'20'})},
-        models.DateField: {'widget': DateTimeInput(attrs={'size':'20','type':'date'})},
+        # models.DateField: {'widget': DateTimeInput(attrs={'size':'20','type':'date'})},
+        models.DateField: {'widget': AdminDateWidget(attrs={'size':'20'})},
         models.IntegerField: {'widget': NumberInput(attrs={'size':'20'})},
         models.TextField: {'widget': Textarea(attrs={'rows':4, 'cols':40})},
     }
+
+    def is_active(self, instance):
+        return instance.active == 1
+
+    is_active.boolean = True
+
     list_filter = ('created', )
     fields = []
     actions = ["export_as_csv"]
@@ -51,11 +62,12 @@ class AnimalAdmin(AtlasAdminModel, ExportCsvMixin):
     search_fields = ('prep_id',)
     ordering = ['prep_id']
     exclude = ('created',)
+    
 
     def create_section(self, obj):
             return format_html(
-                '<a class="button" href="{}">Create Sections</a>&nbsp;',
-                reverse('admin:account-deposit', args=[obj.pk]),
+                '<a class="button" href="{}">Create</a>&nbsp;',
+                reverse('admin:section-creation', args=[obj.pk]),
             )
             
     create_section.short_description = 'Sections'
@@ -89,6 +101,7 @@ class InjectionVirusAdmin(AtlasAdminModel):
     fields = ['injection', 'virus']
     search_fields = ('prep_id',)
     ordering = ['created']
+
     
     def prep_id(self, instance):
         return instance.injection.prep.prep_id
@@ -117,6 +130,41 @@ class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'file_name', 'slide_status', 'scene_qc_1', 'scene_qc_2', 'scene_qc_3', 'scene_qc_4')
     search_fields = ['scan_run__prep__prep_id']
     ordering = ['file_name', 'created']
+    readonly_fields = ['scan_run']
+
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        super().save_model(request, obj, form, change)
+        slide_status = form.cleaned_data.get('slide_status')
+        qc_1 = form.cleaned_data.get('scene_qc_1')
+        qc_2 = form.cleaned_data.get('scene_qc_2')
+        qc_3 = form.cleaned_data.get('scene_qc_3')
+        qc_4 = form.cleaned_data.get('scene_qc_4')
+        qc_5 = form.cleaned_data.get('scene_qc_5')
+        qc_6 = form.cleaned_data.get('scene_qc_6')
+        scene_numbers = []
+
+        def set_bad_tifs(scene_number):
+            tifs = SlideCziToTif.objects.filter(slide_id=obj.id).filter(scene_number__in=scene_number)
+            for tif in tifs:
+                tif.active = 0
+                tif.save()
+
+        if qc_1 is not None:
+            scene_numbers.append(1)
+        if qc_2 is not None:
+            scene_numbers.append(2)
+        if qc_3 is not None:
+            scene_numbers.append(3)
+        if qc_4 is not None:
+            scene_numbers.append(4)
+        if qc_5 is not None:
+            scene_numbers.append(5)
+        if qc_6 is not None:
+            scene_numbers.append(6)
+
+        set_bad_tifs(scene_numbers)
+
 
     def prep_id(self, instance):
         return instance.scan_run.prep.prep_id
@@ -131,8 +179,7 @@ class IsIncludedFilter(admin.SimpleListFilter):
             ('Good', 'Good'),
             ('Bad', 'Bad'),
         )
-        
-        
+
     def queryset(self, request, queryset):
         value = self.value()
         if value == 'Good':
@@ -142,11 +189,15 @@ class IsIncludedFilter(admin.SimpleListFilter):
         return queryset
 
 class SlideCziToTifAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ('file_name', 'include_tif','section_number', 'scene_number', 'channel','width','height','file_size')
+    list_display = ('file_name', 'image_tag', 'histogram', 'is_active', 'scene_number', 'channel','file_size_mb')
     search_fields = ('file_name',)
     ordering = ['section_number']
-    list_filter = (IsIncludedFilter, )
-
+    readonly_fields = ['slide','scene_number', 'section_number','channel', 'file_size', 'processing_duration', 'width','height']
+    list_per_page = 25
+    class Media:
+        css = {
+            'all': ('admin/css/thumbnail.css',)
+        }
 
 class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
     list_display = ('prep_id', 'section_qc', 'ch_1_path', 'ch_2_path', 'ch_3_path', 'ch_4_path')
@@ -154,31 +205,70 @@ class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            # path('<prep_id>', self.admin_site.admin_view(self.process_section),  name='account-deposit',
-            path('<prep_id>', self.process_section,  name='account-deposit',
+            path('<prep_id>', self.process_section,  name='section-creation',
             )
         ]
         return custom_urls + urls
 
     def process_section(self, request, prep_id, *args, **kwargs):
-        cursor = connection.cursor()
-        query = "create_sections()"
-        param = {"prep_id": prep_id, "orderby": orderby}
-        sp = cursor.execute(query, param)
-        data = cursor.fetchall()
+        animal = Animal.objects.get(pk=prep_id)
+        orderby = animal.section_direction
+        with connection.cursor() as cursor:
+            cursor.callproc('create_sections', [prep_id, orderby])
+
+        bad_ids =  Section.objects.values_list('id', flat=True).filter(prep_id__exact=prep_id).filter(section_qc='Replace')
+        junk = ""
+        if bad_ids:
+            all_sections = Section.objects.filter(prep_id__exact=prep_id)
+            data = all_sections.values('id','ch_1_path', 'ch_2_path','ch_3_path','ch_4_path')
+            df = pd.DataFrame.from_records(data)
+            df.set_index(['id'], inplace=True)
+            df.fillna(method='bfill', inplace=True)
+            df.fillna(method='ffill', inplace=True)
+            for index, row in df.iterrows():
+                if index in bad_ids:
+                    section = Section.objects.get(id=index)
+                    section.ch_1_path = row['ch_1_path']
+                    section.ch_2_path = row['ch_2_path']
+                    section.ch_3_path = row['ch_3_path']
+                    section.ch_4_path = row['ch_4_path']
+                    section.save()
+                    junk += "<p>{} {}</p>".format(index, row['ch_1_path'])
+
+        RawSection.objects.filter(prep_id__exact=prep_id).delete()
+        sections =  Section.objects.filter(prep_id__exact=prep_id).order_by('section_number')
+        i = 0
+
+        def create_raw_row(i, prep_id, file_name, channel):
+            rawsection = RawSection()
+            rawsection.prep_id = prep_id
+            rawsection.source_file = file_name
+            rawsection.destination_file = '{}_C{}.tif'.format(str(i), str(channel))
+            rawsection.section_number = i
+            rawsection.channel = channel
+            rawsection.save()
+
+        for i, section in enumerate(sections):
+            if section.ch_1_path is not None:
+                create_raw_row(i, prep_id, section.ch_1_path, 1)
+            if section.ch_2_path is not None:
+                create_raw_row(i, prep_id, section.ch_2_path, 2)
+            if section.ch_3_path is not None:
+                create_raw_row(i, prep_id, section.ch_3_path, 3)
+            if section.ch_4_path is not None:
+                create_raw_row(i, prep_id, section.ch_4_path, 4)
+
         cursor.close()
 
-        sections =  self.model._meta.model.objects.filter(prep_id__exact=prep_id)
-
-       context = self.admin_site.each_context(request)
-       context['opts'] = self.model._meta
-       context['results'] = sections
-       context['title'] = 'Sections for {}'.format(prep_id)
-       return TemplateResponse(
-            request,
-            'admin/section/list.html',
-            context,
-        )
+        context = self.admin_site.each_context(request)
+        context['opts'] = self.model._meta
+        context['results'] = sections
+        context['title'] = 'Sections for {}'.format(prep_id)
+        return TemplateResponse(
+             request,
+             'admin/section/list.html',
+             context,
+         )
 
     
 

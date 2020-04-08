@@ -1,0 +1,15 @@
+.profile-pic-wrapper {
+  width: 90px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.profile-pic-wrapper img {
+  position: relative;
+  width: 60px;
+}
+
+.profile-pic-wrapper:hover img {
+  position: absolute;
+  width: 120px;
+}
