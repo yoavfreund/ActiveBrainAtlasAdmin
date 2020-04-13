@@ -49,6 +49,20 @@ class Task(models.Model):
     def __str__(self):
         return u'{} {}'.format(self.prep.prep_id, self.lookup.description)
 
+class TaskView(models.Model):
+    prep_id = models.CharField(primary_key=True, max_length=20)
+    percent_complete = models.DecimalField(max_digits=6, decimal_places=2)
+    complete = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'task_view'
+        verbose_name = 'Pipeline Progress'
+        verbose_name_plural = 'Pipeline Progress'
+
+    def __str__(self):
+        return u'{}'.format(self.prep_id)
+
 
 class ProgressLookup(models.Model):
     ordinal = models.IntegerField(unique=True)
