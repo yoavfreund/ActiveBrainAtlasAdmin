@@ -16,3 +16,14 @@ select[multiple] {
     height: auto;
     min-height: 150px;
 }
+
+
+td.original p {
+  visibility: hidden;
+}
+
+.inline-group .tabular tr.has_original td {
+    padding-top: 5px;
+}
+
+
