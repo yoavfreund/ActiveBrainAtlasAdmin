@@ -4,7 +4,7 @@ import plotly.figure_factory as ff
 
 from brain.models import Animal
 from brain.forms import AnimalForm
-from chart.models import Task
+from workflow.models import Task
 
 
 

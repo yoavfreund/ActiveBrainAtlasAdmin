@@ -5,12 +5,10 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
-from adminsortable.models import SortableMixin
 from django.db import models
 from django_mysql.models import EnumField
 from django.utils.safestring import mark_safe
 from django.core.validators import MaxValueValidator, MinValueValidator
-from brain.positions.fields import PositionField
 import os
 
 class AtlasModel(models.Model):
@@ -35,7 +33,6 @@ class Animal(AtlasModel):
     ship_date = models.DateField(blank=True, null=True)
     shipper = EnumField(choices=['FedEx','UPS'], blank=True, null=True)
     tracking_number = models.CharField(max_length=100, blank=True, null=True)
-    section_direction = EnumField(choices=[('ASC', 'L to R'), ('DESC','R to L')], blank=False, null=False, default = 'ASC')
     aliases_1 = models.CharField(max_length=100, blank=True, null=True)
     aliases_2 = models.CharField(max_length=100, blank=True, null=True)
     aliases_3 = models.CharField(max_length=100, blank=True, null=True)
@@ -83,7 +80,7 @@ class Histology(AtlasModel):
     whole_brain = models.CharField(max_length=1, blank=True, null=True)
     block = models.CharField(max_length=200, blank=True, null=True)
     date_sectioned = models.DateField(blank=True, null=True)
-    side_sectioned_first = EnumField(choices=['left','right'], blank=False, null=False)
+    side_sectioned_first = EnumField(choices=[('ASC', 'Left'), ('DESC','Right')], blank=False, null=False, default = 'ASC')
     sectioning_method = EnumField(choices=['cryoJane','cryostat','vibratome','optical','sliding microtiome'], blank=True, null=True)
     section_thickness = models.PositiveIntegerField()
     orientation = EnumField(choices=['coronal','horizontal','sagittal','oblique'], blank=True, null=True)
@@ -214,18 +211,30 @@ class Slide(AtlasModel):
     slide_physical_id = models.IntegerField()
     rescan_number = models.CharField(max_length=1)
     slide_status = EnumField(choices=['Bad','Good'], blank=False, null=False)
-    scenes = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(6)])
-    insert_before_one = models.IntegerField(blank=False, null=False, default=0, validators=[MinValueValidator(0),MaxValueValidator(6)])
+    #scenes = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(6)])
+    insert_before_one = models.IntegerField(blank=False, null=False, default=0,
+                                            verbose_name='Insert before S1',
+                                            validators=[MinValueValidator(0),MaxValueValidator(5)])
     scene_qc_1 = EnumField(choices=['Out-of-Focus', 'Bad tissue', 'End'], blank=True, null=True)
-    insert_between_one_two = models.IntegerField(blank=False, null=False, default=0, validators=[MinValueValidator(0),MaxValueValidator(6)])
+    insert_between_one_two = models.IntegerField(blank=False, null=False, default=0,
+                                                 verbose_name='Insert before S2',
+                                                 validators=[MinValueValidator(0),MaxValueValidator(4)])
     scene_qc_2 = EnumField(choices=['Out-of-Focus', 'Bad tissue', 'End'], blank=True, null=True)
-    insert_between_two_three = models.IntegerField(blank=False, null=False, default=0, validators=[MinValueValidator(0),MaxValueValidator(6)])
+    insert_between_two_three = models.IntegerField(blank=False, null=False, default=0,
+                                                   verbose_name='Insert before S3',
+                                                   validators=[MinValueValidator(0),MaxValueValidator(3)])
     scene_qc_3 = EnumField(choices=['Out-of-Focus', 'Bad tissue', 'End'], blank=True, null=True)
-    insert_between_three_four = models.IntegerField(blank=False, null=False, default=0, validators=[MinValueValidator(0),MaxValueValidator(6)])
+    insert_between_three_four = models.IntegerField(blank=False, null=False, default=0,
+                                                    verbose_name='Insert before S4',
+                                                    validators=[MinValueValidator(0),MaxValueValidator(2)])
     scene_qc_4 = EnumField(choices=['Out-of-Focus', 'Bad tissue', 'End'], blank=True, null=True)
-    insert_between_four_five = models.IntegerField(blank=False, null=False, default=0, validators=[MinValueValidator(0),MaxValueValidator(6)])
+    insert_between_four_five = models.IntegerField(blank=False, null=False, default=0,
+                                                   verbose_name='Insert before S5',
+                                                   validators=[MinValueValidator(0),MaxValueValidator(1)])
     scene_qc_5 = EnumField(choices=['Out-of-Focus', 'Bad tissue', 'End'], blank=True, null=True)
-    insert_between_five_six = models.IntegerField(blank=False, null=False, default=0, validators=[MinValueValidator(0),MaxValueValidator(6)])
+    insert_between_five_six = models.IntegerField(blank=False, null=False, default=0,
+                                                  verbose_name='Insert before S6',
+                                                  validators=[MinValueValidator(0),MaxValueValidator(1)])
     scene_qc_6 = EnumField(choices=['Out-of-Focus', 'Bad tissue', 'End'], blank=True, null=True)
     file_name = models.CharField(max_length=200)
     comments = models.TextField(max_length=2001, blank=True, null=True)
@@ -257,10 +266,10 @@ class Slide(AtlasModel):
         db_table = 'slide'
 
 
-class SlideCziToTif(AtlasModel, SortableMixin):
+class SlideCziToTif(AtlasModel):
     slide = models.ForeignKey(Slide, models.DO_NOTHING)
     file_name = models.CharField(max_length=200)
-    section_number = models.IntegerField()
+    #section_number = models.IntegerField()
     scene_index = models.IntegerField()
     scene_number = models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(6)])
     channel = models.IntegerField()
@@ -270,7 +279,6 @@ class SlideCziToTif(AtlasModel, SortableMixin):
     comments = models.TextField(max_length=2000, blank=True, null=True)
     file_size = models.FloatField(verbose_name='File size (bytes)')
     processing_duration = models.FloatField(verbose_name="Processing time (seconds)")
-    last_scene = models.BooleanField(null=False, default=False)
 
     def max_scene(self):
         return self.slide.scenes
@@ -280,7 +288,7 @@ class SlideCziToTif(AtlasModel, SortableMixin):
         db_table = 'slide_czi_to_tif'
         verbose_name = 'Slide CZI to TIF'
         verbose_name_plural = 'Slides CZI to TIF'
-        ordering = ['section_number']
+        ordering = ['file_name', 'scene_number']
 
     def __str__(self):
         return "{}".format(self.file_name)
@@ -321,31 +329,14 @@ class SlideCziToTif(AtlasModel, SortableMixin):
     histogram.short_description = 'Histogram'
 
 
-    # this is deprecated
-    def include_tif(self):
-        status = True
-        if self.scene_number == 1 and self.slide.scene_qc_1 != None:
-            status = False
-        if self.scene_number == 2 and self.slide.scene_qc_2 != None:
-            status = False
-        if self.scene_number == 3 and self.slide.scene_qc_3 != None:
-            status = False
-        if self.scene_number == 4 and self.slide.scene_qc_4 != None:
-            status = False
-        if self.scene_number == 5 and self.slide.scene_qc_5 != None:
-            status = False
-        if self.scene_number == 6 and self.slide.scene_qc_6 != None:
-            status = False
-        if self.slide.slide_status == 'Bad':
-            status = False
-        return status
-
-
 class RawSection(AtlasModel):
     prep = models.ForeignKey(Animal, models.DO_NOTHING)
     section_number = models.IntegerField()
+    slide_physical_id = models.IntegerField()
+    scene_number = models.IntegerField()
     channel = models.IntegerField()
     source_file = models.CharField(max_length=200)
+    destination_file = models.CharField(max_length=200)
     file_status = EnumField(choices=['unusable', 'blurry', 'good'], blank=False, null=False, default='good')
 
     class Meta:
@@ -358,6 +349,8 @@ class Section(AtlasModel):
     prep = models.ForeignKey(Animal, models.DO_NOTHING)
     file_name = models.CharField(max_length=200)
     section_number = models.IntegerField()
+    slide_physical_id = models.IntegerField()
+    scene_number = models.IntegerField()
     section_qc = EnumField(choices=['OK','Replaced'], blank=False, null=False)
     ch_1_path = models.CharField(max_length=200)
     ch_2_path = models.CharField(max_length=200)
