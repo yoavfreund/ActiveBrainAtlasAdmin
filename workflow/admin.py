@@ -105,7 +105,7 @@ class TaskViewAdmin(admin.ModelAdmin):
                           paper_bgcolor="LightSteelBlue",
                           )
         gantt_div = plot(fig, output_type='div', include_plotlyjs=False)
-        # Serialize and attach the chart data to the template context
+        # Serialize and attach the workflow data to the template context
         extra_context = extra_context or {"gantt_div": gantt_div, 'title':'Pipeline Progress by Animal'}
 
         # Call the superclass changelist_view to render the page

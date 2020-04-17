@@ -45,7 +45,7 @@ function GanttMaster() {
 
   this.currentTask; // task currently selected;
 
-  this.resourceUrl = 'static/chart/jquery_chart/res/'; // URL to resources (images etc.)
+  this.resourceUrl = 'static/workflow/jquery_chart/res/'; // URL to resources (images etc.)
   this.__currentTransaction;  // a transaction object holds previous state during changes
   this.__undoStack = [];
   this.__redoStack = [];
@@ -375,7 +375,7 @@ GanttMaster.prototype.loadProject = function (project) {
 
   this.loadTasks(project.tasks, project.selectedRow);
   this.deletedTaskIds = [];
-  
+
   //recover saved splitter position
   if (project.splitterPosition)
     this.splitter.resize(project.splitterPosition);
@@ -816,7 +816,7 @@ GanttMaster.prototype.deleteCurrentTask=function(){
 
     //redraw
     self.redraw();
-  
+
     //[expand]
     if(par) self.editor.refreshExpandStatus(par);
 
@@ -1092,7 +1092,7 @@ GanttMaster.prototype.computeCriticalPath = function () {
 
   function initials(tasks) {
     var initials = [];
-    for (var i = 0; i < tasks.length; i++) {      
+    for (var i = 0; i < tasks.length; i++) {
       if (!tasks[i].depends || tasks[i].depends == "")
         initials.push(tasks[i]);
     }

@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 from brain import views as brain_views
-from chart.gantt_view import gantt
+from workflow.gantt_view import gantt
 from .settings import DEBUG
 
 urlpatterns = [
