@@ -1,27 +1,23 @@
 from django.shortcuts import render
-from brain.models import Animal, ScanRun, Slide, SlideCziToTif
+from brain.models import Animal, ScanRun, Slide, RawSection
 from brain.forms import AnimalForm
 
 # from url initial page
 def image_list(request):
     prep_id = request.GET.get('prep_id')
-    if not prep_id:
-        prep_id = 'DK43'
-    
     form = AnimalForm()  # A form bound to the GET data
     animals = Animal.objects.filter(prep_id=prep_id).order_by('prep_id')
-    animal = Animal.objects.get(prep_id=prep_id)
-    scans = ScanRun.objects.filter(prep_id=prep_id).order_by('created')
-    scan_ids = [scan.id for scan in scans]
-    slides = Slide.objects.filter(scan_run_id__in=scan_ids).order_by('file_name')
-    slide_ids = [slide.id for slide in slides]
-    tiffs = SlideCziToTif.objects.filter(slide_id__in=slide_ids).order_by('file_name')
+    sections = None
+    title = 'Select an animal from the dropdown menu.'
+    if prep_id:
+        title = 'Thumbnail images for: {}'.format(prep_id)
+        sections = RawSection.objects.filter(prep_id=prep_id).order_by('destination_file')
+
+
 
     return render(request, 'list.html',{'animals': animals,
-                                        'animal': animal, 
-                                        'scans': scans, 
-                                        'slides': slides, 
-                                        'tiffs': tiffs,
-                                        'form': form, 
-                                        'animal_title':prep_id})
+                                        'sections': sections,
+                                        'form': form,
+                                        'prep_id': prep_id,
+                                        'title': title})
 

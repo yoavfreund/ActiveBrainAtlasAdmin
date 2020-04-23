@@ -9,9 +9,8 @@
         <thead>
         <tr>
             <th>Prep ID</th>
-			<th>Section file</th>
-            <th>Section Number</th>
-            <th>Section QC</th>
+			<th>Source file</th>
+            <th>Section #</th>
             <th>Channel 1</th>
             <th>Channel 2</th>
             <th>Channel 3</th>
@@ -23,9 +22,8 @@
         {% for result in results %}
         <tr class="{% cycle 'row1' 'row2' %}">
             <td>{{ result.prep_id }}</td>
-            <td>{{ result.file_name }}</td>
-            <td>{{ result.section_number }}</td>
-            <td>{{ result.section_qc }}</td>
+            <td>{{ result.slide.file_name }}</td>
+            <td>{{ forloop.counter }}</td>
             <td>{{ result.ch_1_path }}</td>
             <td>{{ result.ch_2_path }}</td>
             <td>{{ result.ch_3_path }}</td>
