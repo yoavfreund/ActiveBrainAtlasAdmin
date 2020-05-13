@@ -34,6 +34,7 @@ class ExportCsvMixin:
 
     export_as_csv.short_description = "Export Selected"
 
+
 class AtlasAdminModel(admin.ModelAdmin):
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'20'})},
@@ -180,30 +181,94 @@ class SlideAdmin(AtlasAdminModel, ExportCsvMixin):
         return False
 
 
-
     def prep_id(self, instance):
         return instance.scan_run.prep.prep_id
 
 
 class SlideCziToTifAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ('file_name', 'histogram', 'is_active', 'scene_number', 'channel','file_size_mb')
+    list_display = ('file_name', 'is_active', 'scene_number', 'channel','file_size_mb')
     search_fields = ('file_name',)
     ordering = ['file_name']
     readonly_fields = ['slide','scene_number', 'channel', 'file_size', 'processing_duration', 'width','height']
+
+
+def set_section_unusable(modeladmin, request, queryset):
+    queryset.update(file_status='unusable')
+set_section_unusable.short_description = "Mark sections unusable"
+
+def set_section_good(modeladmin, request, queryset):
+    queryset.update(file_status='good')
+set_section_good.short_description = "Mark sections good"
+
+
+class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
+    #change_list_template = "admin/section/qc.html"
+    list_display = ('slide', 'section_number', 'destination_file', 'file_status', 'histogram',  'image_tag')
+    search_fields = ['prep_id']
+    list_filter = ['channel']
+    ordering = ['prep_id', 'section_number', 'channel']
+    search_fields = ['prep__prep_id']
+    actions = [set_section_good, set_section_unusable, "export_as_csv"]
     list_per_page = 25
     class Media:
         css = {
             'all': ('admin/css/thumbnail.css',)
         }
 
-class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
-    list_display = ('prep_id', 'section_qc', 'ch_1_path', 'ch_2_path', 'ch_3_path', 'ch_4_path')
-    list_filter = ('prep_id', )
+
+    prep_id = None
+    slides = None
+    current_sections = None
+    current_section = None
+    current_slide = None
+    position = 1
+    section_number = 1
+
+
+
+    def changelist_viewXXX(self, request, extra_context=None):
+        extra_context = {'title': 'Section Quality Control'}
+        extra_context['current_slide'] = self.get_slides(request)
+        extra_context['current_section'] = self.current_section
+        extra_context['prep_id'] = self.prep_id
+        return super(SectionAdmin, self).changelist_view(request, extra_context=extra_context)
+
+    def slide(self, instance):
+        return instance.tif.slide
+
+
+    def get_slides(self, request):
+        if request.GET and request.GET['q']:
+            self.prep_id = request.GET['q']
+            self.sections = RawSection.objects.filter(prep_id=self.prep_id)\
+                .filter(channel=1).order_by('section_number')
+            self.slide_ids = [section.tif.slide_id for section in self.sections]
+            self.slides = Slide.objects.filter(pk__in=self.slide_ids).order_by('slide_physical_id')
+            self.current_slide = self.slides[0]
+            self.current_section = self.sections[0]
+            #self.png = section.thumbnail_name()
+        return self.current_slide
+
+    def change_slide(self, request, increment):
+        self.position += increment
+        self.current_slide = self.slide_ids[self.position]
+        self.current_section = self.sections[self.position]
+
+    def change_section(self, request, increment):
+        self.position += increment
+        self.current_section = self.sections[self.position]
+        return self.changelist_view(request)
+
+
+    #def get_queryset(self, *args, **kwargs):
+    #    return RawSection.objects.filter(channel=1)
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            path('<prep_id>', self.process_section,  name='section-creation',
-            )
+            path('<prep_id>', self.process_section,  name='section-creation'),
+            path('move-slide/<int:increment>', self.change_slide, name='change_slide'),
+            path('move-section/<int:increment>', self.change_section, name='change_section')
         ]
         return custom_urls + urls
 
@@ -219,16 +284,17 @@ class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
             sections =  Section.objects.filter(prep_id__exact=prep_id)\
                 .order_by('-slide_physical_id', '-scene_number')
             raw_sections = RawSection.objects.filter(prep_id__exact=prep_id)\
-                .order_by('-section_number', 'channel')
+                .order_by('-slide_physical_id', '-scene_number', 'channel')
         else:
             sections = Section.objects.filter(prep_id__exact=prep_id)\
                 .order_by('slide_physical_id', 'scene_number')
             raw_sections = RawSection.objects.filter(prep_id__exact=prep_id)\
-                .order_by('section_number', 'channel')
+                .order_by('slide_physical_id', 'scene_number', 'channel')
 
         # fix section number in raw_sections to increment every 3
         channels = raw_sections.aggregate(Max('channel'))
         channels = channels['channel__max']
+
 
         if channels > 0:
             new_section_number = 0
@@ -249,7 +315,11 @@ class SectionAdmin(AtlasAdminModel, ExportCsvMixin):
              context,
          )
 
+    def has_add_permission(self, request, obj=None):
+        return False
 
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 admin.site.register(Animal, AnimalAdmin)
 admin.site.register(Histology, HistologyAdmin)
@@ -260,7 +330,7 @@ admin.site.register(OrganicLabel, OrganicLabelAdmin)
 admin.site.register(ScanRun, ScanRunAdmin)
 admin.site.register(Slide, SlideAdmin)
 admin.site.register(SlideCziToTif, SlideCziToTifAdmin)
-admin.site.register(Section, SectionAdmin)
+admin.site.register(RawSection, SectionAdmin)
 
 admin.site.site_header = 'Active Brain Atlas Admin'
 admin.site.site_title = "Active Brain Atlas"
