@@ -1,0 +1,67 @@
+<html>
+<head>
+<!--    <link rel="stylesheet" type="text/css" href="/css/myStyle.css">   -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+
+    <title>Active Atlas Viewer</title>  <!-- title of page in the tab -->
+</head>
+<body>
+
+<div class="jumbotron text-center">
+
+  <h2> Active Atlas Data Viewer </h2>
+  <hr>
+
+
+  <div class="container-fluid">
+
+
+
+  <div class="row">
+
+
+      <div class="col-sm-6">
+          <a target="_blank"
+          href="https://activebrainatlas.ucsd.edu/ng/#!%7B%22dimensions%22:%7B%22x%22:%5B4.6e-7%2C%22m%22%5D%2C%22y%22:%5B4.6e-7%2C%22m%22%5D%2C%22z%22:%5B0.00002%2C%22m%22%5D%7D%2C%22position%22:%5B21819.44921875%2C7241.64306640625%2C302.5043029785156%5D%2C%22crossSectionScale%22:68.09432742525534%2C%22projectionScale%22:32768%2C%22layers%22:%5B%7B%22type%22:%22image%22%2C%22source%22:%22precomputed://https://activebrainatlas.ucsd.edu/data/DK39/neuroglancer_data/CH0%22%2C%22shader%22:%22#uicontrol%20float%20min%20slider%28min=0%2C%20max=1%2C%20default=0%29%5Cn#uicontrol%20float%20max%20slider%28min=0%2C%20max=1%2C%20default=1%29%5Cn#uicontrol%20float%20invert%20slider%28min=0%2C%20max=1%2C%20default=0%2C%20step=1%29%5Cn#uicontrol%20float%20brightness%20slider%28min=-1%2C%20max=1%29%5Cn#uicontrol%20float%20contrast%20slider%28min=-3%2C%20max=3%2C%20step=0.01%29%5Cnvoid%20main%28%29%20%7B%5Cn%20%20float%20pix_val%20=%20toNormalized%28getDataValue%28%29%29%3B%5Cn%20%20if%28pix_val%20%3C%20min%29%7B%5Cn%20%20%5Ctpix_val%20=%200.0%3B%5Cn%20%20%7D%5Cn%20%20if%28pix_val%20%3E%20max%29%7B%5Cn%20%20%20%20pix_val%20=%201.0%3B%5Cn%20%20%7D%5Cn%20%20%5Cn%20%20if%28invert==1.0%29%7B%5Cn%20%20%5Ct%20%20emitGrayscale%28%281.0%20-%28pix_val%20-%20brightness%29%29%20%2A%5Cn%20%20%20%20%20%20%20exp%28contrast%29%29%3B%5Cn%20%20%7D%5Cn%20%20else%7B%5Cn%20%20%20%20emitGrayscale%28%28pix_val%20+%20brightness%29%20%2A%5Cn%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20exp%28contrast%29%29%3B%5Cn%20%20%7D%5Cn%5Cn%7D%22%2C%22name%22:%22NTB%22%7D%2C%7B%22type%22:%22image%22%2C%22source%22:%7B%22url%22:%22precomputed://https://activebrainatlas.ucsd.edu/data/DK39/neuroglancer_data/CH1%22%2C%22transform%22:%7B%22matrix%22:%5B%5B1%2C0%2C0%2C-500%5D%2C%5B0%2C1%2C0%2C-500%5D%2C%5B0%2C0%2C1%2C140%5D%5D%2C%22outputDimensions%22:%7B%22x%22:%5B4.6e-7%2C%22m%22%5D%2C%22y%22:%5B4.6e-7%2C%22m%22%5D%2C%22z%22:%5B0.00002%2C%22m%22%5D%7D%7D%7D%2C%22shader%22:%22#uicontrol%20float%20min%20slider%28min=0%2C%20max=1%2C%20default=0%29%5Cn#uicontrol%20float%20max%20slider%28min=0%2C%20max=1%2C%20default=1%29%5Cn#uicontrol%20float%20invert%20slider%28min=0%2C%20max=1%2C%20default=0%2C%20step=1%29%5Cn#uicontrol%20float%20brightness%20slider%28min=-1%2C%20max=1%29%5Cn#uicontrol%20float%20contrast%20slider%28min=-3%2C%20max=3%2C%20step=0.01%29%5Cnvoid%20main%28%29%20%7B%5Cn%20%20float%20pix_val%20=%20toNormalized%28getDataValue%28%29%29%3B%5Cn%20%20if%28pix_val%20%3C%20min%29%7B%5Cn%20%20%5Ctpix_val%20=%200.0%3B%5Cn%20%20%7D%5Cn%20%20if%28pix_val%20%3E%20max%29%7B%5Cn%20%20%20%20pix_val%20=%201.0%3B%5Cn%20%20%7D%5Cn%20%20%5Cn%20%20if%28invert==1.0%29%7B%5Cn%20%20%20%20%20%20%5Cn%20%20%5Ct%20%20emitRGB%28vec3%28%281.0%20-%28pix_val%20-%20brightness%29%29%20%2A%5Cn%20%20%20%20%20%20%20exp%28contrast%29%2C0%2C0%29%29%3B%5Cn%20%20%7D%5Cn%20%20else%7B%5Cn%20%20%20%20emitRGB%28vec3%28%28pix_val%20+%20brightness%29%20%2A%5Cn%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20exp%28contrast%29%2C0%2C0%29%29%3B%5Cn%20%20%7D%5Cn%5Cn%7D%22%2C%22opacity%22:0.08%2C%22name%22:%22CH1%22%7D%2C%7B%22type%22:%22image%22%2C%22source%22:%7B%22url%22:%22precomputed://https://activebrainatlas.ucsd.edu/data/DK39/neuroglancer_data/CH2%22%2C%22transform%22:%7B%22matrix%22:%5B%5B1%2C0%2C0%2C-540%5D%2C%5B0%2C1%2C0%2C-540%5D%2C%5B0%2C0%2C1%2C140%5D%5D%2C%22outputDimensions%22:%7B%22x%22:%5B4.6e-7%2C%22m%22%5D%2C%22y%22:%5B4.6e-7%2C%22m%22%5D%2C%22z%22:%5B0.00002%2C%22m%22%5D%7D%7D%7D%2C%22shader%22:%22#uicontrol%20float%20min%20slider%28min=0%2C%20max=1%2C%20default=0%29%5Cn#uicontrol%20float%20max%20slider%28min=0%2C%20max=1%2C%20default=1%29%5Cn#uicontrol%20float%20invert%20slider%28min=0%2C%20max=1%2C%20default=0%2C%20step=1%29%5Cn#uicontrol%20float%20brightness%20slider%28min=-1%2C%20max=1%29%5Cn#uicontrol%20float%20contrast%20slider%28min=-3%2C%20max=3%2C%20step=0.01%29%5Cnvoid%20main%28%29%20%7B%5Cn%20%20float%20pix_val%20=%20toNormalized%28getDataValue%28%29%29%3B%5Cn%20%20if%28pix_val%20%3C%20min%29%7B%5Cn%20%20%5Ctpix_val%20=%200.0%3B%5Cn%20%20%7D%5Cn%20%20if%28pix_val%20%3E%20max%29%7B%5Cn%20%20%20%20pix_val%20=%201.0%3B%5Cn%20%20%7D%5Cn%20%20%5Cn%20%20if%28invert==1.0%29%7B%5Cn%20%20%20%20%20%20%5Cn%20%20%5Ct%20%20emitRGB%28vec3%280%2C%281.0%20-%28pix_val%20-%20brightness%29%29%20%2A%5Cn%20%20%20%20%20%20%20exp%28contrast%29%2C0%29%29%3B%5Cn%20%20%7D%5Cn%20%20else%7B%5Cn%20%20%20%20emitRGB%28vec3%280%2C%28pix_val%20+%20brightness%29%20%2A%5Cn%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20exp%28contrast%29%2C0%29%29%3B%5Cn%20%20%7D%5Cn%5Cn%7D%22%2C%22opacity%22:0.39%2C%22name%22:%22CH2%22%7D%5D%2C%22selectedLayer%22:%7B%22layer%22:%22CH2%22%2C%22visible%22:true%2C%22size%22:391%7D%2C%22layout%22:%224panel%22%7D">
+
+          <button class="btn btn-primary">View Brain DK39</button>
+          <img src="./images/DK39_thumbnail.png" alt="DK39" class="rounded float-left" width="300">
+        </a>
+        <p style="font-size:smaller">DK39</p>
+      </div>
+    </div>
+
+      <div class="col-sm-6">
+          <a target="_blank"
+          href="https://www.mephistosoftware.com/ng/#!%7B%22dimensions%22:%7B%22x%22:%5B4.6e-7%2C%22m%22%5D%2C%22y%22:%5B4.6e-7%2C%22m%22%5D%2C%22z%22:%5B0.00002%2C%22m%22%5D%7D%2C%22position%22:%5B21819.44921875%2C7241.64306640625%2C302.5043029785156%5D%2C%22crossSectionScale%22:68.09432742525534%2C%22projectionScale%22:32768%2C%22layers%22:%5B%7B%22type%22:%22image%22%2C%22source%22:%22precomputed://https://www.mephistosoftware.com/neuroglancer%22%2C%22shader%22:%22#uicontrol%20float%20min%20slider%28min=0%2C%20max=1%2C%20default=0%29%5Cn#uicontrol%20float%20max%20slider%28min=0%2C%20max=1%2C%20default=1%29%5Cn#uicontrol%20float%20invert%20slider%28min=0%2C%20max=1%2C%20default=0%2C%20step=1%29%5Cn#uicontrol%20float%20brightness%20slider%28min=-1%2C%20max=1%29%5Cn#uicontrol%20float%20contrast%20slider%28min=-3%2C%20max=3%2C%20step=0.01%29%5Cnvoid%20main%28%29%20%7B%5Cn%20%20float%20pix_val%20=%20toNormalized%28getDataValue%28%29%29%3B%5Cn%20%20if%28pix_val%20%3C%20min%29%7B%5Cn%20%20%5Ctpix_val%20=%200.0%3B%5Cn%20%20%7D%5Cn%20%20if%28pix_val%20%3E%20max%29%7B%5Cn%20%20%20%20pix_val%20=%201.0%3B%5Cn%20%20%7D%5Cn%20%20%5Cn%20%20if%28invert==1.0%29%7B%5Cn%20%20%5Ct%20%20emitGrayscale%28%281.0%20-%28pix_val%20-%20brightness%29%29%20%2A%5Cn%20%20%20%20%20%20%20exp%28contrast%29%29%3B%5Cn%20%20%7D%5Cn%20%20else%7B%5Cn%20%20%20%20emitGrayscale%28%28pix_val%20+%20brightness%29%20%2A%5Cn%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20exp%28contrast%29%29%3B%5Cn%20%20%7D%5Cn%5Cn%7D%22%2C%22name%22:%22NTB%22%7D%2C%7B%22type%22:%22image%22%2C%22source%22:%7B%22url%22:%22precomputed://https://www.mephistosoftware.com/neuroglancer%22%2C%22transform%22:%7B%22matrix%22:%5B%5B1%2C0%2C0%2C-500%5D%2C%5B0%2C1%2C0%2C-500%5D%2C%5B0%2C0%2C1%2C140%5D%5D%2C%22outputDimensions%22:%7B%22x%22:%5B4.6e-7%2C%22m%22%5D%2C%22y%22:%5B4.6e-7%2C%22m%22%5D%2C%22z%22:%5B0.00002%2C%22m%22%5D%7D%7D%7D%2C%22shader%22:%22#uicontrol%20float%20min%20slider%28min=0%2C%20max=1%2C%20default=0%29%5Cn#uicontrol%20float%20max%20slider%28min=0%2C%20max=1%2C%20default=1%29%5Cn#uicontrol%20float%20invert%20slider%28min=0%2C%20max=1%2C%20default=0%2C%20step=1%29%5Cn#uicontrol%20float%20brightness%20slider%28min=-1%2C%20max=1%29%5Cn#uicontrol%20float%20contrast%20slider%28min=-3%2C%20max=3%2C%20step=0.01%29%5Cnvoid%20main%28%29%20%7B%5Cn%20%20float%20pix_val%20=%20toNormalized%28getDataValue%28%29%29%3B%5Cn%20%20if%28pix_val%20%3C%20min%29%7B%5Cn%20%20%5Ctpix_val%20=%200.0%3B%5Cn%20%20%7D%5Cn%20%20if%28pix_val%20%3E%20max%29%7B%5Cn%20%20%20%20pix_val%20=%201.0%3B%5Cn%20%20%7D%5Cn%20%20%5Cn%20%20if%28invert==1.0%29%7B%5Cn%20%20%20%20%20%20%5Cn%20%20%5Ct%20%20emitRGB%28vec3%28%281.0%20-%28pix_val%20-%20brightness%29%29%20%2A%5Cn%20%20%20%20%20%20%20exp%28contrast%29%2C0%2C0%29%29%3B%5Cn%20%20%7D%5Cn%20%20else%7B%5Cn%20%20%20%20emitRGB%28vec3%28%28pix_val%20+%20brightness%29%20%2A%5Cn%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20exp%28contrast%29%2C0%2C0%29%29%3B%5Cn%20%20%7D%5Cn%5Cn%7D%22%2C%22opacity%22:0.08%2C%22name%22:%22CH1%22%7D%2C%7B%22type%22:%22image%22%2C%22source%22:%7B%22url%22:%22precomputed://https://www.mephistosoftware.com/neuroglancer%22%2C%22transform%22:%7B%22matrix%22:%5B%5B1%2C0%2C0%2C-540%5D%2C%5B0%2C1%2C0%2C-540%5D%2C%5B0%2C0%2C1%2C140%5D%5D%2C%22outputDimensions%22:%7B%22x%22:%5B4.6e-7%2C%22m%22%5D%2C%22y%22:%5B4.6e-7%2C%22m%22%5D%2C%22z%22:%5B0.00002%2C%22m%22%5D%7D%7D%7D%2C%22shader%22:%22#uicontrol%20float%20min%20slider%28min=0%2C%20max=1%2C%20default=0%29%5Cn#uicontrol%20float%20max%20slider%28min=0%2C%20max=1%2C%20default=1%29%5Cn#uicontrol%20float%20invert%20slider%28min=0%2C%20max=1%2C%20default=0%2C%20step=1%29%5Cn#uicontrol%20float%20brightness%20slider%28min=-1%2C%20max=1%29%5Cn#uicontrol%20float%20contrast%20slider%28min=-3%2C%20max=3%2C%20step=0.01%29%5Cnvoid%20main%28%29%20%7B%5Cn%20%20float%20pix_val%20=%20toNormalized%28getDataValue%28%29%29%3B%5Cn%20%20if%28pix_val%20%3C%20min%29%7B%5Cn%20%20%5Ctpix_val%20=%200.0%3B%5Cn%20%20%7D%5Cn%20%20if%28pix_val%20%3E%20max%29%7B%5Cn%20%20%20%20pix_val%20=%201.0%3B%5Cn%20%20%7D%5Cn%20%20%5Cn%20%20if%28invert==1.0%29%7B%5Cn%20%20%20%20%20%20%5Cn%20%20%5Ct%20%20emitRGB%28vec3%280%2C%281.0%20-%28pix_val%20-%20brightness%29%29%20%2A%5Cn%20%20%20%20%20%20%20exp%28contrast%29%2C0%29%29%3B%5Cn%20%20%7D%5Cn%20%20else%7B%5Cn%20%20%20%20emitRGB%28vec3%280%2C%28pix_val%20+%20brightness%29%20%2A%5Cn%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20exp%28contrast%29%2C0%29%29%3B%5Cn%20%20%7D%5Cn%5Cn%7D%22%2C%22opacity%22:0.39%2C%22name%22:%22CH2%22%7D%5D%2C%22selectedLayer%22:%7B%22layer%22:%22CH2%22%2C%22visible%22:true%2C%22size%22:391%7D%2C%22layout%22:%224panel%22%7D">
+
+          <button class="btn btn-primary">View Brain DK39 test1</button>
+        </a>
+        <p style="font-size:smaller">DK39 on mephi</p>
+      </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="row">
+  <p class="bg-primary" style="font-size:smaller;"> Note, the viewers have only been tested using the Chrome web browser. They require WebGL to function properly, issues are often resolved by reloading the webpage. </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

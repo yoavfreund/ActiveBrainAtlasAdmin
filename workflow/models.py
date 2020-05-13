@@ -84,3 +84,22 @@ class ProgressLookup(models.Model):
 
 
 
+class WorkQueue(models.Model):
+    prep = models.ForeignKey(Animal, models.CASCADE)
+    ordinal = models.IntegerField(unique=True)
+    description = models.TextField()
+    completed = models.BooleanField(default = False)
+    active = models.IntegerField(default = 1, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'work_queue'
+        verbose_name = 'Work Queue'
+        verbose_name_plural = 'Work Queues'
+
+    def __str__(self):
+        return u'{}'.format(self.description)
+
+
+

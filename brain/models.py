@@ -11,6 +11,7 @@ from django.utils.safestring import mark_safe
 from django.core.validators import MaxValueValidator, MinValueValidator
 import os
 
+
 class AtlasModel(models.Model):
     active = models.BooleanField(default = True)
     created = models.DateTimeField(auto_now_add=True)
@@ -261,7 +262,7 @@ class Slide(AtlasModel):
 
 
 class SlideCziToTif(AtlasModel):
-    slide = models.ForeignKey(Slide, models.DO_NOTHING)
+    slide = models.ForeignKey(Slide, models.DO_NOTHING, related_name='slideczis')
     file_name = models.CharField(max_length=200)
     #section_number = models.IntegerField()
     scene_index = models.IntegerField()
@@ -273,6 +274,7 @@ class SlideCziToTif(AtlasModel):
     comments = models.TextField(max_length=2000, blank=True, null=True)
     file_size = models.FloatField(verbose_name='File size (bytes)')
     processing_duration = models.FloatField(verbose_name="Processing time (seconds)")
+
 
     def max_scene(self):
         return self.slide.scenes
@@ -294,9 +296,35 @@ class SlideCziToTif(AtlasModel):
             return self.file_size
 
 
+class RawSection(AtlasModel):
+    prep = models.ForeignKey(Animal, models.DO_NOTHING)
+    tif = models.ForeignKey(SlideCziToTif, models.DO_NOTHING, related_name='sections')
+    section_number = models.IntegerField(verbose_name='Section #')
+    slide_physical_id = models.IntegerField()
+    scene_number = models.IntegerField()
+    channel = models.IntegerField()
+    source_file = models.CharField(max_length=200)
+    destination_file = models.CharField(max_length=200, verbose_name='Section File')
+    file_status = EnumField(choices=['unusable', 'blurry', 'good'], blank=False, null=False, default='good',
+                            verbose_name='Status')
+
+    class Meta:
+        managed = True
+        db_table = 'raw_section'
+        verbose_name = 'Section'
+        verbose_name_plural = 'Sections'
+
+    def __str__(self):
+        return self.tif.slide.file_name
+
+
+    def thumbnail_name(self):
+        return self.destination_file.replace('tif','png')
+
+
     def histogram(self):
-        png = self.file_name.replace('tif','png')
-        prep_id = self.slide.scan_run.prep.prep_id
+        png = self.destination_file.replace('tif','png')
+        prep_id = self.prep.prep_id
         testfile = "/net/birdstore/Active_Atlas_Data/data_root/pipeline_data/{}/histogram/{}".format(prep_id, png)
         if os.path.isfile(testfile):
             histogram = "/data/{}/histogram/{}".format(prep_id, png)
@@ -305,28 +333,6 @@ class SlideCziToTif(AtlasModel):
         else:
             return mark_safe('<div>Not available</div>')
     histogram.short_description = 'Histogram'
-
-
-class RawSection(AtlasModel):
-    prep = models.ForeignKey(Animal, models.DO_NOTHING)
-    #slide = models.ForeignKey(Slide, models.DO_NOTHING)
-    section_number = models.IntegerField()
-    slide_physical_id = models.IntegerField()
-    scene_number = models.IntegerField()
-    channel = models.IntegerField()
-    source_file = models.CharField(max_length=200)
-    destination_file = models.CharField(max_length=200)
-    file_status = EnumField(choices=['unusable', 'blurry', 'good'], blank=False, null=False, default='good')
-
-    class Meta:
-        managed = True
-        db_table = 'raw_section'
-        verbose_name = 'Raw Section'
-        verbose_name_plural = 'Raw Sections'
-
-    def thumbnail_name(self):
-        return self.destination_file.replace('tif','png')
-
 
     def image_tag(self):
         png = self.destination_file.replace('tif','png')

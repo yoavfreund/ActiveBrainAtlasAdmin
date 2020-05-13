@@ -14,15 +14,31 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.views.generic import TemplateView
 from brain import views as brain_views
 from workflow.gantt_view import gantt
-from .settings import DEBUG
+
+from rest_framework import routers
+from scheduler import views
+router = routers.DefaultRouter()
+router.register(r'users', views.UserViewSet)
+router.register(r'locations', views.LocationViewSet)
+router.register(r'schedules', views.ScheduleViewSet)
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+#from .settings import DEBUG, MEDIA_URL, MEDIA_ROOT
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'image-listing', brain_views.image_list),
     path(r'graph', gantt),
     path(r'gantt', TemplateView.as_view(template_name='gantt.html')),
+    path('', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path(r'api-token-auth/', obtain_jwt_token),
+    path(r'api-token-refresh/', refresh_jwt_token),
+    path(r'oauth/', include('social_django.urls', namespace='social')),
 ]
+#if DEBUG:
+#    from django.conf.urls.static import static
+#    urlpatterns = urlpatterns + static(MEDIA_URL, document_root=MEDIA_ROOT)
