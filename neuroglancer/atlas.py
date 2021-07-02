@@ -18,11 +18,12 @@ MANUAL = 1
 def align_point_sets(src, dst, with_scaling=True):
     """
     Analytically computes a transformation that minimizes the squared error between source and destination.
+    The transformation is restricted to rigid + uniform scaling.
     ------------------------------------------------------
-    src is the dictionary of the brain we want to align
-    dst is the dictionary of the atlas structures
+    src is the dictionary of the structure stack coordinates for the brain we want to align
+    dst is the dictionary of the atlas structures in atlas coordinates.
     Defaults to scaling true, which means the transformation is rigid and a uniform scale.
-    returns the linear transformation r, and the translation vector t
+    returns the linear transformation r (3x3) , and the translation vector t (3) as numpy arrays.
     """
     assert src.shape == dst.shape
     assert len(src.shape) == 2
